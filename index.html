@@ -13,10 +13,15 @@
             color: #333;
         }
         .header {
-            background: linear-gradient(90deg, #ffcc00, #ff0000, #003087); /* Colombian flag colors */
+            background: linear-gradient(90deg, #ffcc00, #ff0000, #003087);
             padding: 20px;
             text-align: center;
             color: white;
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
         .header h1 {
             margin: 0;
@@ -54,6 +59,24 @@
             height: 200px;
             border-radius: 10px;
         }
+        .player button {
+            background-color: #ffcc00;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .player button:hover {
+            background-color: #e6b800;
+            animation-play-state: paused; /* Pauses pulse on hover */
+        }
         .genres {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -65,10 +88,21 @@
             padding: 15px;
             text-align: center;
             border-radius: 5px;
-            transition: transform 0.2s;
+            opacity: 0; /* Start hidden for animation */
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        /* Stagger animation for each card */
+        .genre-card:nth-child(1) { animation-delay: 0.1s; }
+        .genre-card:nth-child(2) { animation-delay: 0.2s; }
+        .genre-card:nth-child(3) { animation-delay: 0.3s; }
+        .genre-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
         .genre-card:hover {
             transform: scale(1.05);
+            transition: transform 0.2s;
         }
         .genre-card img {
             width: 100%;
@@ -76,14 +110,7 @@
             object-fit: cover;
             border-radius: 5px;
         }
-        .footer {
-            background-color: #003087;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            margin-top: 30px;
-        }
-        button {
+        .genre-card button {
             background-color: #ffcc00;
             border: none;
             padding: 10px 20px;
@@ -91,8 +118,15 @@
             cursor: pointer;
             border-radius: 5px;
         }
-        button:hover {
+        .genre-card button:hover {
             background-color: #e6b800;
+        }
+        .footer {
+            background-color: #003087;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -120,3 +154,31 @@
         <div class="genres">
             <h2>Géneros Populares</h2>
             <div class="genre-card">
+                <img src="https://via.placeholder.com/220x150?text=Vallenato" alt="Vallenato">
+                <h3>Vallenato</h3>
+                <button>Escuchar</button>
+            </div>
+            <div class="genre-card">
+                <img src="https://via.placeholder.com/220x150?text=Cumbia" alt="Cumbia">
+                <h3>Cumbia</h3>
+                <button>Escuchar</button>
+            </div>
+            <div class="genre-card">
+                <img src="https://via.placeholder.com/220x150?text=Salsa" alt="Salsa">
+                <h3>Salsa</h3>
+                <button>Escuchar</button>
+            </div>
+            <div class="genre-card">
+                <img src="https://via.placeholder.com/220x150?text=Reggaeton" alt="Reggaeton">
+                <h3>Reggaeton</h3>
+                <button>Escuchar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Radio Colombia Viva. Todos los derechos reservados.</p>
+        <p>Síguenos en redes: <a href="#" style="color: #ffcc00;">Facebook</a> | <a href="#" style="color: #ffcc00;">Instagram</a></p>
+    </div>
+</body>
+</html>
