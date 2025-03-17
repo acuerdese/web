@@ -3,121 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jungle Adventure</title>
+    <title>Perspective Grid Animation</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Verdana', sans-serif;
-            background: linear-gradient(to bottom, #87ceeb, #228b22);
-            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
+            background-color: #000;
             overflow: hidden;
         }
-        .header {
-            text-align: center;
-            padding: 30px;
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px #000;
-        }
-        .jungle {
-            position: relative;
-            max-width: 1000px;
-            margin: 0 auto;
-            height: 80vh;
-        }
-        /* Animation 1: Swinging Monkey */
-        .monkey {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
-            background: url('https://via.placeholder.com/80?text=🐒') no-repeat center;
-            animation: swing 3s ease-in-out infinite;
-        }
-        @keyframes swing {
-            0% { transform: translateX(-50%) rotate(-20deg); }
-            50% { transform: translateX(-50%) rotate(20deg); }
-            100% { transform: translateX(-50%) rotate(-20deg); }
-        }
-        /* Animation 2: Growing Flower */
-        .flower {
-            position: absolute;
-            bottom: 20px;
-            left: 20%;
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #ff69b4, #ff1493);
-            border-radius: 50%;
-            animation: grow 4s infinite alternate;
-        }
-        @keyframes grow {
-            0% { transform: scale(0.5); opacity: 0.5; }
-            100% { transform: scale(1.5); opacity: 1; }
-        }
-        /* Animation 3: Fluttering Butterfly */
-        .butterfly {
-            position: absolute;
-            top: 100px;
-            right: 20%;
-            width: 60px;
-            height: 40px;
-            background: url('https://via.placeholder.com/60x40?text=🦋') no-repeat center;
-            animation: flutter 2s infinite;
-        }
-        @keyframes flutter {
-            0% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(10deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(20px) rotate(-10deg); }
-            100% { transform: translateY(0) rotate(0deg); }
-        }
-        .content {
-            text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-        }
-        button {
-            background-color: #ff4500;
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #ff6347;
+        canvas {
+            border: 1px solid #fff;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Jungle Adventure</h1>
-        <p>Explore the wild wonders!</p>
-    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
 
-    <div class="jungle">
-        <div class="monkey"></div>
-        <div class="flower"></div>
-        <div class="butterfly"></div>
-        <div class="content">
-            <h2>Welcome to the Jungle</h2>
-            <p>Dive into the heart of nature with us!</p>
-            <button>Begin Adventure</button>
-        </div>
-    </div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Canvas dimensions
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Grid settings
+        const gridSize = 20;
+        const numLines = 30;
+        let angleX = 0;
+        let angleY = 0;
+
+        // Mouse tracking
+        let mouseX = width / 2;
+        let mouseY = height / 2;
+
+        // Perspective parameters
+        const perspective = 200;
+
+        // Mouse movement handler
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            angleY = (mouseX - width / 2) * 0.005; // Rotate based on X position
+            angleX = (mouseY - height / 2) * 0.005; // Rotate based on Y position
+        });
+
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, width, height);
+
+            // Move to center
+            ctx.translate(width / 2, height / 2);
+
+            // Draw grid lines
+            for (let i = -numLines / 2; i <= numLines / 2; i++) {
+                for (let j = -numLines / 2; j <= numLines / 2; j++) {
+                    const x = i * gridSize;
+                    const y = j * gridSize;
+
+                    // Simulate 3D perspective
+                    const z = 100; // Fixed depth for simplicity
+                    const scale = perspective / (perspective + z);
+
+                    // Apply rotation around Y-axis (left-right)
+                    let rotatedX = x * Math.cos(angleY) - z * Math.sin(angleY);
+                    let rotatedZ = x * Math.sin(angleY) + z * Math.cos(angleY);
+
+                    // Apply rotation around X-axis (up-down)
+                    let finalY = y * Math.cos(angleX) - rotatedZ * Math.sin(angleX);
+                    let finalZ = y * Math.sin(angleX) + rotatedZ * Math.cos(angleX);
+
+                    // Project to 2D
+                    const projX = rotatedX * scale;
+                    const projY = finalY * scale;
+
+                    // Draw points or lines
+                    ctx.beginPath();
+                    ctx.arc(projX, projY, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsl(${i * 10 + j * 10}, 100%, 50%)`; // Colorful effect
+                    ctx.fill();
+
+                    // Connect with lines to neighbors
+                    if (i < numLines / 2) {
+                        const nextX = (i + 1) * gridSize;
+                        const nextRotatedX = nextX * Math.cos(angleY) - z * Math.sin(angleY);
+                        const nextRotatedZ = nextX * Math.sin(angleY) + z * Math.cos(angleY);
+                        const nextFinalY = y * Math.cos(angleX) - nextRotatedZ * Math.sin(angleX);
+                        const nextProjX = nextRotatedX * scale;
+                        const nextProjY = nextFinalY * scale;
+                        ctx.beginPath();
+                        ctx.moveTo(projX, projY);
+                        ctx.lineTo(nextProjX, nextProjY);
+                        ctx.strokeStyle = '#fff';
+                        ctx.stroke();
+                    }
+                    if (j < numLines / 2) {
+                        const nextY = (j + 1) * gridSize;
+                        const nextFinalY = nextY * Math.cos(angleX) - rotatedZ * Math.sin(angleX);
+                        const nextProjY = nextFinalY * scale;
+                        ctx.beginPath();
+                        ctx.moveTo(projX, projY);
+                        ctx.lineTo(projX, nextProjY);
+                        ctx.strokeStyle = '#fff';
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Reset transformation
+            ctx.translate(-width / 2, -height / 2);
+
+            // Request next frame
+            requestAnimationFrame(draw);
+        }
+
+        // Start animation
+        draw();
+    </script>
 </body>
 </html>
