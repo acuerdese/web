@@ -45,4 +45,11 @@
             const rect = canvas.getBoundingClientRect();
             mouseX = e.clientX - rect.left;
             mouseY = e.clientY - rect.top;
-            angle
+            angleY = (mouseX - width / 2) * 0.005; // Rotate Y based on X position
+            angleX = (mouseY - height / 2) * 0.005; // Rotate X based on Y position
+        });
+
+        // Function to draw Mickey Mouse face at a given position and scale
+        function drawMickey(x, y, z, scale) {
+            const projScale = perspective / (perspective + z);
+            const proj
