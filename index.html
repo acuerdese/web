@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random NG Perspective</title>
+    <title>Random PNG Tilt</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #000;
-            overflow: hidden;
+            background: #000;
         }
         canvas {
             border: 1px solid #fff;
@@ -26,29 +24,57 @@
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-
-        // Check if canvas is supported
-        if (!ctx) {
-            console.error("Canvas context not supported!");
-            document.body.innerHTML = "Sorry, your browser doesn't support canvas.";
-            throw new Error("Canvas not supported");
-        }
-
-        // Canvas dimensions
         const width = canvas.width;
         const height = canvas.height;
 
-        // Mouse tracking
+        // Array of free image URLs (200px width)
+        const images = [
+            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200',
+            'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=200',
+            'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=200'
+        ];
+
+        // Load random image
+        const img = new Image();
+        img.src = images[Math.floor(Math.random() * images.length)];
+        img.onload = () => animate();
+
+        // Mouse coordinates
         let mouseX = width / 2;
         let mouseY = height / 2;
-        let angleX = 0;
-        let angleY = 0;
 
-        // Perspective parameter
-        const perspective = 300;
+        // Mouse movement handler
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
 
-        // List of random PNG URLs (free, public images, resized to 200px)
-        const randomPNGs = [
-            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200', // Dog
-            'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=200', // Cat
-            'https://pixabay.com/get/gd7b6e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Calculate tilt based on mouse position
+            const maxTilt = 20; // degrees
+            const tiltX = (mouseY / height - 0.5) * maxTilt;
+            const tiltY = (mouseX / width - 0.5) * -maxTilt;
+
+            // Center the image
+            const imgW = img.width;
+            const imgH = img.height;
+            const x = (width - imgW) / 2;
+            const y = (height - imgH) / 2;
+
+            // Apply 3D transform
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate(tiltX * Math.PI / 180);
+            ctx.rotate(tiltY * Math.PI / 180);
+            ctx.translate(-width / 2, -height / 2);
+            ctx.drawImage(img, x, y, imgW, imgH);
+            ctx.restore();
+
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>
