@@ -1,184 +1,57 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Colombia Viva</title>
+    <title>Cosmic Explorer Hub</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
-            color: #333;
+            background-color: #0a0a23;
+            color: #ffffff;
+            overflow-x: hidden;
         }
         .header {
-            background: linear-gradient(90deg, #ffcc00, #ff0000, #003087);
-            padding: 20px;
             text-align: center;
-            color: white;
-            animation: fadeIn 2s ease-in-out;
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            padding: 40px;
+            background: linear-gradient(to bottom, #0a0a23, #1a1a3d);
         }
         .header h1 {
             margin: 0;
-            font-size: 2.5em;
-        }
-        .nav {
-            background-color: #003087;
-            padding: 10px 20px;
-            text-align: center;
-        }
-        .nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-        .nav a:hover {
-            color: #ffcc00;
+            font-size: 3em;
+            text-shadow: 0 0 10px #00ffff;
         }
         .main {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        .player {
-            background-color: #fff;
-            border: 2px solid #ff0000;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
         }
-        .player img {
-            width: 200px;
-            height: 200px;
-            border-radius: 10px;
-        }
-        .player button {
-            background-color: #ffcc00;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 5px;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .player button:hover {
-            background-color: #e6b800;
-            animation-play-state: paused; /* Pauses pulse on hover */
-        }
-        .genres {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-        .genre-card {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 15px;
-            text-align: center;
-            border-radius: 5px;
-            opacity: 0; /* Start hidden for animation */
-            animation: slideIn 0.5s ease-out forwards;
-        }
-        /* Stagger animation for each card */
-        .genre-card:nth-child(1) { animation-delay: 0.1s; }
-        .genre-card:nth-child(2) { animation-delay: 0.2s; }
-        .genre-card:nth-child(3) { animation-delay: 0.3s; }
-        .genre-card:nth-child(4) { animation-delay: 0.4s; }
-        @keyframes slideIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .genre-card:hover {
-            transform: scale(1.05);
-            transition: transform 0.2s;
-        }
-        .genre-card img {
-            width: 100%;
+        /* Animation 1: Rotating Planet */
+        .planet {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 150px;
             height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
+            background: radial-gradient(circle, #ff8c00, #ff4500);
+            border-radius: 50%;
+            animation: rotatePlanet 10s linear infinite;
         }
-        .genre-card button {
-            background-color: #ffcc00;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 5px;
+        @keyframes rotatePlanet {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .genre-card button:hover {
-            background-color: #e6b800;
-        }
-        .footer {
-            background-color: #003087;
-            color: white;
+        /* Animation 2: Bouncing Spaceship */
+        .spaceship {
             text-align: center;
-            padding: 15px;
-            margin-top: 30px;
+            margin: 100px 0;
         }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Radio Colombia Viva</h1>
-        <p>¡La música de Colombia en tus oídos!</p>
-    </div>
-
-    <div class="nav">
-        <a href="#">Inicio</a>
-        <a href="#">Géneros</a>
-        <a href="#">Programación</a>
-        <a href="#">Contacto</a>
-    </div>
-
-    <div class="main">
-        <div class="player">
-            <h2>Escucha en Vivo</h2>
-            <img src="https://via.placeholder.com/200" alt="Radio Colombia Viva">
-            <p>Transmitiendo lo mejor de la música colombiana</p>
-            <button>Play</button>
-        </div>
-
-        <div class="genres">
-            <h2>Géneros Populares</h2>
-            <div class="genre-card">
-                <img src="https://via.placeholder.com/220x150?text=Vallenato" alt="Vallenato">
-                <h3>Vallenato</h3>
-                <button>Escuchar</button>
-            </div>
-            <div class="genre-card">
-                <img src="https://via.placeholder.com/220x150?text=Cumbia" alt="Cumbia">
-                <h3>Cumbia</h3>
-                <button>Escuchar</button>
-            </div>
-            <div class="genre-card">
-                <img src="https://via.placeholder.com/220x150?text=Salsa" alt="Salsa">
-                <h3>Salsa</h3>
-                <button>Escuchar</button>
-            </div>
-            <div class="genre-card">
-                <img src="https://via.placeholder.com/220x150?text=Reggaeton" alt="Reggaeton">
-                <h3>Reggaeton</h3>
-                <button>Escuchar</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>© 2025 Radio Colombia Viva. Todos los derechos reservados.</p>
-        <p>Síguenos en redes: <a href="#" style="color: #ffcc00;">Facebook</a> | <a href="#" style="color: #ffcc00;">Instagram</a></p>
-    </div>
-</body>
-</html>
+        .spaceship img {
+            width: 100px;
+            animation: bounceShip 2s ease-in-out infinite;
+        }
+        @keyframes bounceShip {
+            0%, 100% { transform: translateY(0); }
