@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random PNG Perspective</title>
+    <title>Random NG Perspective</title>
     <style>
         body {
             margin: 0;
@@ -27,6 +27,7 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
+        // Check if canvas is supported
         if (!ctx) {
             console.error("Canvas context not supported!");
             document.body.innerHTML = "Sorry, your browser doesn't support canvas.";
@@ -46,4 +47,8 @@
         // Perspective parameter
         const perspective = 300;
 
-        // List of random PNG URLs from free image
+        // List of random PNG URLs (free, public images, resized to 200px)
+        const randomPNGs = [
+            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200', // Dog
+            'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=200', // Cat
+            'https://pixabay.com/get/gd7b6e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e
