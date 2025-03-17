@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perspective Grid Animation</title>
+    <title>Mickey Mouse Perspective</title>
     <style>
         body {
             margin: 0;
@@ -31,100 +31,18 @@
         const width = canvas.width;
         const height = canvas.height;
 
-        // Grid settings
-        const gridSize = 20;
-        const numLines = 30;
-        let angleX = 0;
-        let angleY = 0;
-
         // Mouse tracking
         let mouseX = width / 2;
         let mouseY = height / 2;
+        let angleX = 0;
+        let angleY = 0;
 
-        // Perspective parameters
-        const perspective = 200;
+        // Perspective parameter
+        const perspective = 300;
 
         // Mouse movement handler
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
             mouseX = e.clientX - rect.left;
             mouseY = e.clientY - rect.top;
-            angleY = (mouseX - width / 2) * 0.005; // Rotate based on X position
-            angleX = (mouseY - height / 2) * 0.005; // Rotate based on Y position
-        });
-
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, width, height);
-
-            // Move to center
-            ctx.translate(width / 2, height / 2);
-
-            // Draw grid lines
-            for (let i = -numLines / 2; i <= numLines / 2; i++) {
-                for (let j = -numLines / 2; j <= numLines / 2; j++) {
-                    const x = i * gridSize;
-                    const y = j * gridSize;
-
-                    // Simulate 3D perspective
-                    const z = 100; // Fixed depth for simplicity
-                    const scale = perspective / (perspective + z);
-
-                    // Apply rotation around Y-axis (left-right)
-                    let rotatedX = x * Math.cos(angleY) - z * Math.sin(angleY);
-                    let rotatedZ = x * Math.sin(angleY) + z * Math.cos(angleY);
-
-                    // Apply rotation around X-axis (up-down)
-                    let finalY = y * Math.cos(angleX) - rotatedZ * Math.sin(angleX);
-                    let finalZ = y * Math.sin(angleX) + rotatedZ * Math.cos(angleX);
-
-                    // Project to 2D
-                    const projX = rotatedX * scale;
-                    const projY = finalY * scale;
-
-                    // Draw points or lines
-                    ctx.beginPath();
-                    ctx.arc(projX, projY, 2, 0, Math.PI * 2);
-                    ctx.fillStyle = `hsl(${i * 10 + j * 10}, 100%, 50%)`; // Colorful effect
-                    ctx.fill();
-
-                    // Connect with lines to neighbors
-                    if (i < numLines / 2) {
-                        const nextX = (i + 1) * gridSize;
-                        const nextRotatedX = nextX * Math.cos(angleY) - z * Math.sin(angleY);
-                        const nextRotatedZ = nextX * Math.sin(angleY) + z * Math.cos(angleY);
-                        const nextFinalY = y * Math.cos(angleX) - nextRotatedZ * Math.sin(angleX);
-                        const nextProjX = nextRotatedX * scale;
-                        const nextProjY = nextFinalY * scale;
-                        ctx.beginPath();
-                        ctx.moveTo(projX, projY);
-                        ctx.lineTo(nextProjX, nextProjY);
-                        ctx.strokeStyle = '#fff';
-                        ctx.stroke();
-                    }
-                    if (j < numLines / 2) {
-                        const nextY = (j + 1) * gridSize;
-                        const nextFinalY = nextY * Math.cos(angleX) - rotatedZ * Math.sin(angleX);
-                        const nextProjY = nextFinalY * scale;
-                        ctx.beginPath();
-                        ctx.moveTo(projX, projY);
-                        ctx.lineTo(projX, nextProjY);
-                        ctx.strokeStyle = '#fff';
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            // Reset transformation
-            ctx.translate(-width / 2, -height / 2);
-
-            // Request next frame
-            requestAnimationFrame(draw);
-        }
-
-        // Start animation
-        draw();
-    </script>
-</body>
-</html>
+            angle
