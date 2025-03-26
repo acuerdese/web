@@ -1,80 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random PNG Tilt</title>
+    <title>Simple Mario Clone</title>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #000;
-        }
         canvas {
-            border: 1px solid #fff;
+            border: 1px solid black;
+        }
+        #gameContainer {
+            width: 800px;
+            height: 400px;
+            margin: 20px auto;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas" width="800" height="600"></canvas>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const width = canvas.width;
-        const height = canvas.height;
 
-        // Array of free image URLs (200px width)
-        const images = [
-            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200',
-            'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=200',
-            'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=200'
-        ];
+        // Player properties
+        const player = {
+            x: 50,
+            y: 300,
+            width: 30,
+            height: 30,
+            speed: 5,
+            velX: 0,
+            velY: 0,
+            jumping: false,
+            gravity: 0.5,
+            jumpStrength: -10
+        };
 
-        // Load random image
-        const img = new Image();
-        img.src = images[Math.floor(Math.random() * images.length)];
-        img.onload = () => animate();
+        // Platform properties
+        const platform = {
+            x: 0,
+            y: 350,
+            width: 800,
+            height: 50
+        };
 
-        // Mouse coordinates
-        let mouseX = width / 2;
-        let mouseY = height / 2;
+        let keys = {};
 
-        // Mouse movement handler
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left;
-            mouseY = e.clientY - rect.top;
+        // Event listeners for controls
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
         });
 
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
 
-            // Calculate tilt based on mouse position
-            const maxTilt = 20; // degrees
-            const tiltX = (mouseY / height - 0.5) * maxTilt;
-            const tiltY = (mouseX / width - 0.5) * -maxTilt;
+        function update() {
+            // Apply gravity
+            player.velY += player.gravity;
+            player.y += player.velY;
+            player.x += player.velX;
 
-            // Center the image
-            const imgW = img.width;
-            const imgH = img.height;
-            const x = (width - imgW) / 2;
-            const y = (height - imgH) / 2;
+            // Controls
+            if (keys['ArrowRight']) {
+                player.velX = player.speed;
+            } else if (keys['ArrowLeft']) {
+                player.velX = -player.speed;
+            } else {
+                player.velX = 0;
+            }
 
-            // Apply 3D transform
-            ctx.save();
-            ctx.translate(width / 2, height / 2);
-            ctx.rotate(tiltX * Math.PI / 180);
-            ctx.rotate(tiltY * Math.PI / 180);
-            ctx.translate(-width / 2, -height / 2);
-            ctx.drawImage(img, x, y, imgW, imgH);
-            ctx.restore();
+            if (keys[' '] && !player.jumping) {
+                player.jumping = true;
+                player.velY = player.jumpStrength;
+            }
 
-            requestAnimationFrame(animate);
+            // Collision with platform
+            if (player.y + player.height > platform.y && 
+                player.y + player.height < platform.y + platform.height &&
+                player.velY > 0) {
+                player.y = platform.y - player.height;
+                player.velY = 0;
+                player.jumping = false;
+            }
+
+            // Keep player in bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y + player.height > canvas.height) {
+                player.y = canvas.height - player.height;
+                player.velY = 0;
+                player.jumping = false;
+            }
         }
+
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw platform
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+
+            // Draw player
+            ctx.fillStyle = 'red';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        gameLoop();
     </script>
 </body>
 </html>
