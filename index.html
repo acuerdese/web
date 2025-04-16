@@ -1,121 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Simple Mario Clone</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-        #gameContainer {
-            width: 800px;
-            height: 400px;
-            margin: 20px auto;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Poll</title>
+    <link rel="stylesheet" href="poll.css">
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div class="poll-container">
+        <div class="poll-header">
+            <h1 id="poll-title">Loading Poll...</h1>
+            <p id="poll-description"></p>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+        
+        <div class="poll-body" id="poll-body">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="poll-footer">
+            <button id="prev-btn" class="nav-btn" disabled>Previous</button>
+            <span id="question-counter">0/0</span>
+            <button id="next-btn" class="nav-btn">Next</button>
+        </div>
     </div>
-
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Player properties
-        const player = {
-            x: 50,
-            y: 300,
-            width: 30,
-            height: 30,
-            speed: 5,
-            velX: 0,
-            velY: 0,
-            jumping: false,
-            gravity: 0.5,
-            jumpStrength: -10
-        };
-
-        // Platform properties
-        const platform = {
-            x: 0,
-            y: 350,
-            width: 800,
-            height: 50
-        };
-
-        let keys = {};
-
-        // Event listeners for controls
-        document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-        });
-
-        document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-
-        function update() {
-            // Apply gravity
-            player.velY += player.gravity;
-            player.y += player.velY;
-            player.x += player.velX;
-
-            // Controls
-            if (keys['ArrowRight']) {
-                player.velX = player.speed;
-            } else if (keys['ArrowLeft']) {
-                player.velX = -player.speed;
-            } else {
-                player.velX = 0;
-            }
-
-            if (keys[' '] && !player.jumping) {
-                player.jumping = true;
-                player.velY = player.jumpStrength;
-            }
-
-            // Collision with platform
-            if (player.y + player.height > platform.y && 
-                player.y + player.height < platform.y + platform.height &&
-                player.velY > 0) {
-                player.y = platform.y - player.height;
-                player.velY = 0;
-                player.jumping = false;
-            }
-
-            // Keep player in bounds
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-            if (player.y + player.height > canvas.height) {
-                player.y = canvas.height - player.height;
-                player.velY = 0;
-                player.jumping = false;
-            }
-        }
-
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#87CEEB';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw platform
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-
-            // Draw player
-            ctx.fillStyle = 'red';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
-
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Start the game
-        gameLoop();
-    </script>
+    
+    <div class="thank-you-screen" id="thank-you-screen">
+        <h2 id="thank-you-message">Thank you!</h2>
+        <button id="restart-btn" class="restart-btn">Take Survey Again</button>
+    </div>
+    
+    <script src="poll.js"></script>
 </body>
 </html>
