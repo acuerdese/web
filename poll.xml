@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<poll>
+    <title>Minimalist Interactive Poll</title>
+    <description>Answer a few questions to help us improve</description>
+    
+    <questions>
+        <!-- Multiple Choice -->
+        <question type="multiple" id="q1">
+            <text>How satisfied are you with our service?</text>
+            <options>
+                <option>Very satisfied</option>
+                <option>Satisfied</option>
+                <option>Neutral</option>
+                <option>Dissatisfied</option>
+                <option>Very dissatisfied</option>
+            </options>
+        </question>
+        
+        <!-- Rating Scale -->
+        <question type="rating" id="q2" min="1" max="10">
+            <text>On a scale from 1 to 10, how likely are you to recommend us?</text>
+        </question>
+        
+        <!-- Text Input -->
+        <question type="text" id="q3">
+            <text>What could we do to improve your experience?</text>
+            <placeholder>Type your suggestions here...</placeholder>
+        </question>
+        
+        <!-- Yes/No -->
+        <question type="yesno" id="q4">
+            <text>Have you used our product before?</text>
+        </question>
+        
+        <!-- Range Slider -->
+        <question type="range" id="q5" min="0" max="100" step="5">
+            <text>What percentage of your work depends on our product?</text>
+        </question>
+    </questions>
+    
+    <thankyou>
+        <message>Thank you for your feedback!</message>
+        <button>Submit another response</button>
+    </thankyou>
+</poll>
