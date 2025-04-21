@@ -2,47 +2,813 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Interactive Poll</title>
-    <link href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/3.4.0/x2js.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent: #7c3aed;
+            --accent-hover: #6d28d9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .poll-container {
+            position: relative;
+            height: 70vh;
+            overflow: hidden;
+        }
+
+        .poll-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            transform: translateX(100%);
+            z-index: 1;
+        }
+
+        .poll-card.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        .poll-card.prev {
+            transform: translateX(-100%);
+        }
+
+        .poll-card.next {
+            transform: translateX(100%);
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .option.selected {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .text-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            width: 100%;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background-color: rgba(124, 58, 237, 0.5);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: 0;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(20px, 20px);
+            }
+            50% {
+                transform: translate(-20px, 20px);
+            }
+            75% {
+                transform: translate(-20px, -20px);
+            }
+        }
+
+        .thank-you {
+            text-align: center;
+            display: none;
+        }
+
+        .thank-you h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .thank-you p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-option input {
+            accent-color: var(--accent);
+        }
+
+        /* Image preference styles */
+        .image-preference {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .image-option {
+            flex: 1;
+            min-width: 250px;
+            max-width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .image-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-option.selected {
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .image-option img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-label {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .image-preference {
+                flex-direction: column;
+            }
+            
+            .image-option {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="poll-container">
-        <div class="poll-header">
-            <h1 id="poll-title">Modern Poll</h1>
-            <div class="progress-container">
-                <div class="progress-bar"></div>
-            </div>
+    <div class="container">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
         </div>
-        
-        <div class="question-container" id="swipe-area">
-            <div class="question-card active">
-                <h2 class="question-text">Loading questions...</h2>
-                <div class="options-container"></div>
-                <button class="next-btn" disabled>
-                    <span class="btn-text">Loading...</span>
-                    <span class="btn-arrow">→</span>
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <div class="completion-screen hidden">
-        <div class="completion-content">
-            <h2>Thank you for completing the poll!</h2>
+        <div class="poll-container" id="pollContainer">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+
+        <div class="navigation">
+            <button class="btn btn-outline" id="prevBtn" disabled>Previous</button>
+            <button class="btn" id="nextBtn">Next</button>
+        </div>
+
+        <div class="thank-you" id="thankYou">
+            <h2>Thank You!</h2>
             <p>Your responses have been recorded.</p>
-            <button class="restart-btn">
-                <span>Take Another Poll</span>
-                <span class="btn-arrow">↻</span>
-            </button>
         </div>
     </div>
 
-    <div class="swipe-hint">
-        <span class="swipe-icon">← Swipe to continue →</span>
-    </div>
+    <!-- Floating shapes for background animation -->
+    <div class="shape" id="shape1" style="width: 300px; height: 300px; background: #7c3aed; top: 10%; left: 10%;"></div>
+    <div class="shape" id="shape2" style="width: 400px; height: 400px; background: #10b981; bottom: 10%; right: 10%;"></div>
+    <div class="shape" id="shape3" style="width: 250px; height: 250px; background: #f59e0b; top: 30%; right: 20%;"></div>
 
-    <script src="script.js"></script>
+    <script>
+        // Configuration and questions
+        let questions = [];
+        let shuffledQuestions = [];
+        let configTexts = {
+            title: 'Modern Interactive Poll',
+            welcome: 'Please help us improve by answering a few questions',
+            next_button: 'Next',
+            prev_button: 'Previous',
+            submit_button: 'Submit',
+            thank_you: {
+                heading: 'Thank You!',
+                message: 'Your responses have been recorded.'
+            },
+            validation: {
+                required: 'Please provide an answer to this question',
+                email: 'Please enter a valid email address'
+            }
+        };
+
+        // DOM elements
+        const pollContainer = document.getElementById('pollContainer');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const progressBar = document.getElementById('progress');
+        const thankYou = document.getElementById('thankYou');
+        let currentQuestion = 0;
+        const answers = {};
+
+        // Load XML config
+        function loadConfig() {
+            return fetch('config.xml')
+                .then(response => response.text())
+                .then(str => {
+                    const x2js = new X2JS();
+                    const xmlDoc = x2js.xml_str2json(str);
+                    
+                    // Update texts from XML
+                    if (xmlDoc.poll_config.texts) {
+                        configTexts = {
+                            ...configTexts,
+                            ...xmlDoc.poll_config.texts
+                        };
+                        
+                        // Update UI texts
+                        document.title = configTexts.title;
+                        nextBtn.textContent = configTexts.next_button;
+                        prevBtn.textContent = configTexts.prev_button;
+                        thankYou.querySelector('h2').textContent = configTexts.thank_you.heading;
+                        thankYou.querySelector('p').textContent = configTexts.thank_you.message;
+                    }
+                    
+                    // Add questions from XML
+                    if (xmlDoc.poll_config.questions && xmlDoc.poll_config.questions.question) {
+                        const xmlQuestions = Array.isArray(xmlDoc.poll_config.questions.question) ? 
+                            xmlDoc.poll_config.questions.question : 
+                            [xmlDoc.poll_config.questions.question];
+                        
+                        questions = [
+                            ...xmlQuestions.map(q => ({
+                                question: q.text,
+                                type: q.type,
+                                ...(q.type === 'image_preference' ? {
+                                    imageLeft: q.image_left._src,
+                                    imageLeftAlt: q.image_left._alt,
+                                    imageRight: q.image_right._src,
+                                    imageRightAlt: q.image_right._alt
+                                } : {}),
+                                ...(q.type === 'options' ? {
+                                    options: Array.isArray(q.options.option) ? 
+                                        q.options.option : 
+                                        [q.options.option]
+                                } : {})
+                            })),
+                            // Personal info questions
+                            {
+                                question: "What is your name?",
+                                type: "text",
+                                required: true
+                            },
+                            {
+                                question: "What is your gender?",
+                                type: "radio",
+                                options: ["Male", "Female", "Non-binary", "Prefer not to say"],
+                                required: true
+                            },
+                            {
+                                question: "Where are you located?",
+                                type: "text",
+                                required: true
+                            },
+                            {
+                                question: "What is your email address?",
+                                type: "email",
+                                required: true
+                            },
+                            {
+                                question: "What is your mobile number?",
+                                type: "tel",
+                                required: true
+                            }
+                        ];
+                    }
+                    
+                    // Shuffle the non-personal questions (first questions.length - 5)
+                    shuffledQuestions = [...questions];
+                    const personalInfoCount = 5;
+                    const pollQuestionsCount = shuffledQuestions.length - personalInfoCount;
+                    
+                    for (let i = 0; i < pollQuestionsCount; i++) {
+                        const j = Math.floor(Math.random() * pollQuestionsCount);
+                        [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading config:', error);
+                    // Fallback to default questions
+                    questions = [
+                        {
+                            question: "How satisfied are you with our product/service?",
+                            type: "options",
+                            options: ["Very satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very dissatisfied"]
+                        },
+                        {
+                            question: "How often do you use our product/service?",
+                            type: "options",
+                            options: ["Daily", "Weekly", "Monthly", "Rarely", "First time"]
+                        },
+                        {
+                            question: "What feature do you value the most?",
+                            type: "options",
+                            options: ["Ease of use", "Performance", "Design", "Price", "Customer support"]
+                        },
+                        {
+                            question: "How likely are you to recommend us to others?",
+                            type: "scale",
+                            min: 0,
+                            max: 10,
+                            minLabel: "Not likely",
+                            maxLabel: "Very likely"
+                        },
+                        {
+                            question: "What could we improve?",
+                            type: "text"
+                        },
+                        {
+                            question: "What is your name?",
+                            type: "text",
+                            required: true
+                        },
+                        {
+                            question: "What is your gender?",
+                            type: "radio",
+                            options: ["Male", "Female", "Non-binary", "Prefer not to say"],
+                            required: true
+                        },
+                        {
+                            question: "Where are you located?",
+                            type: "text",
+                            required: true
+                        },
+                        {
+                            question: "What is your email address?",
+                            type: "email",
+                            required: true
+                        },
+                        {
+                            question: "What is your mobile number?",
+                            type: "tel",
+                            required: true
+                        }
+                    ];
+                    shuffledQuestions = [...questions];
+                });
+        }
+
+        // Create poll cards
+        function createPollCards() {
+            shuffledQuestions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = `poll-card ${index === 0 ? 'active' : ''}`;
+                card.dataset.index = index;
+
+                let html = `<div class="question">${q.question}</div>`;
+
+                if (q.type === "options") {
+                    html += '<div class="options">';
+                    q.options.forEach(option => {
+                        html += `<div class="option" data-value="${option}">${option}</div>`;
+                    });
+                    html += '</div>';
+                } else if (q.type === "radio") {
+                    html += '<div class="radio-group">';
+                    q.options.forEach(option => {
+                        html += `
+                            <label class="radio-option">
+                                <input type="radio" name="answer" value="${option}">
+                                ${option}
+                            </label>
+                        `;
+                    });
+                    html += '</div>';
+                } else if (q.type === "scale") {
+                    html += `
+                        <div class="scale-container">
+                            <input type="range" min="${q.min}" max="${q.max}" value="${Math.floor((q.max - q.min)/2)}" class="slider" id="scaleSlider">
+                            <div class="scale-labels">
+                                <span>${q.minLabel}</span>
+                                <span>${q.maxLabel}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (q.type === "image_preference") {
+                    html += `
+                        <div class="image-preference">
+                            <div class="image-option" data-value="left">
+                                <img src="${q.imageLeft}" alt="${q.imageLeftAlt}">
+                                <div class="image-label">Option A</div>
+                            </div>
+                            <div class="image-option" data-value="right">
+                                <img src="${q.imageRight}" alt="${q.imageRightAlt}">
+                                <div class="image-label">Option B</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const inputType = q.type === "email" ? "email" : q.type === "tel" ? "tel" : "text";
+                    html += `<input type="${inputType}" class="text-input" placeholder="Your answer...">`;
+                }
+
+                card.innerHTML = html;
+                pollContainer.appendChild(card);
+            });
+
+            // Add event listeners to options
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const card = this.closest('.poll-card');
+                    const index = parseInt(card.dataset.index);
+                    
+                    // Remove selected class from all options in this card
+                    card.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store answer
+                    answers[index] = this.dataset.value;
+                    
+                    // Enable next button if required
+                    if (shuffledQuestions[index].required && !answers[index]) {
+                        nextBtn.disabled = true;
+                    } else {
+                        nextBtn.disabled = false;
+                    }
+                });
+            });
+
+            // Add event listeners to image options
+            document.querySelectorAll('.image-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const card = this.closest('.poll-card');
+                    const index = parseInt(card.dataset.index);
+                    
+                    // Remove selected class from all image options in this card
+                    card.querySelectorAll('.image-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store answer
+                    answers[index] = this.dataset.value;
+                    
+                    // Enable next button if required
+                    if (shuffledQuestions[index].required && !answers[index]) {
+                        nextBtn.disabled = true;
+                    } else {
+                        nextBtn.disabled = false;
+                    }
+                });
+            });
+
+            // Add event listeners to text inputs
+            document.querySelectorAll('.text-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const card = this.closest('.poll-card');
+                    const index = parseInt(card.dataset.index);
+                    answers[index] = this.value;
+                    
+                    // Enable next button if required
+                    if (shuffledQuestions[index].required && !answers[index]) {
+                        nextBtn.disabled = true;
+                    } else {
+                        nextBtn.disabled = false;
+                    }
+                });
+            });
+
+            // Add event listeners to radio inputs
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const card = this.closest('.poll-card');
+                    const index = parseInt(card.dataset.index);
+                    answers[index] = this.value;
+                    
+                    // Enable next button if required
+                    if (shuffledQuestions[index].required && !answers[index]) {
+                        nextBtn.disabled = true;
+                    } else {
+                        nextBtn.disabled = false;
+                    }
+                });
+            });
+
+            // Add event listener to scale slider
+            document.querySelectorAll('.slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const card = this.closest('.poll-card');
+                    const index = parseInt(card.dataset.index);
+                    answers[index] = this.value;
+                });
+            });
+        }
+
+        // Next button click handler
+        nextBtn.addEventListener('click', function() {
+            // Check if answer is required but not provided
+            if (shuffledQuestions[currentQuestion].required && !answers[currentQuestion]) {
+                alert(configTexts.validation.required);
+                return;
+            }
+
+            // Validate email if required
+            if (shuffledQuestions[currentQuestion].type === 'email' && answers[currentQuestion]) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(answers[currentQuestion])) {
+                    alert(configTexts.validation.email);
+                    return;
+                }
+            }
+
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                // Move to next question
+                const currentCard = document.querySelector(`.poll-card[data-index="${currentQuestion}"]`);
+                const nextCard = document.querySelector(`.poll-card[data-index="${currentQuestion + 1}"]`);
+                
+                currentCard.classList.remove('active');
+                currentCard.classList.add('prev');
+                
+                nextCard.classList.remove('next');
+                nextCard.classList.add('active');
+                
+                currentQuestion++;
+                updateProgress();
+                animateBackground();
+                
+                // Update button states
+                prevBtn.disabled = currentQuestion === 0;
+                
+                // Disable next button if answer is required but not provided
+                if (shuffledQuestions[currentQuestion].required && !answers[currentQuestion]) {
+                    nextBtn.disabled = true;
+                } else {
+                    nextBtn.disabled = false;
+                }
+                
+                // Change next button text if last question
+                if (currentQuestion === shuffledQuestions.length - 1) {
+                    nextBtn.textContent = configTexts.submit_button;
+                }
+            } else {
+                // Submit the poll
+                submitPoll();
+            }
+        });
+
+        // Previous button click handler
+        prevBtn.addEventListener('click', function() {
+            if (currentQuestion > 0) {
+                const currentCard = document.querySelector(`.poll-card[data-index="${currentQuestion}"]`);
+                const prevCard = document.querySelector(`.poll-card[data-index="${currentQuestion - 1}"]`);
+                
+                currentCard.classList.remove('active');
+                currentCard.classList.add('next');
+                
+                prevCard.classList.remove('prev');
+                prevCard.classList.add('active');
+                
+                currentQuestion--;
+                updateProgress();
+                animateBackground();
+                
+                // Update button states
+                prevBtn.disabled = currentQuestion === 0;
+                nextBtn.disabled = false;
+                nextBtn.textContent = currentQuestion === shuffledQuestions.length - 1 ? 
+                    configTexts.submit_button : 
+                    configTexts.next_button;
+            }
+        });
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (currentQuestion + 1) / shuffledQuestions.length * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Animate background shapes
+        function animateBackground() {
+            const colors = ['#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+            const shapes = ['50%', '30%', '10%', '0', '25% 75% 25% 75% / 60% 40% 60% 40%'];
+            
+            document.querySelectorAll('.shape').forEach(shape => {
+                // Random color
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                shape.style.backgroundColor = color;
+                
+                // Random border radius
+                const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
+                shape.style.borderRadius = shapeType;
+                
+                // Random size
+                const size = 200 + Math.floor(Math.random() * 300);
+                shape.style.width = `${size}px`;
+                shape.style.height = `${size}px`;
+                
+                // Random position
+                const top = Math.floor(Math.random() * 80);
+                const left = Math.floor(Math.random() * 80);
+                shape.style.top = `${top}%`;
+                shape.style.left = `${left}%`;
+            });
+        }
+
+        // Submit poll
+        function submitPoll() {
+            // Show thank you message
+            document.querySelector('.container').style.display = 'none';
+            thankYou.style.display = 'block';
+            
+            // Prepare data for submission
+            const formData = new FormData();
+            
+            // Add answers to form data
+            shuffledQuestions.forEach((q, index) => {
+                formData.append(`q${index}`, answers[index] || '');
+            });
+            
+            // Send data to server
+            fetch('submit_poll.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Initialize the poll
+        loadConfig().then(() => {
+            createPollCards();
+            updateProgress();
+            animateBackground();
+            setInterval(animateBackground, 10000);
+        });
+
+        // Add swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        pollContainer.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        pollContainer.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Swipe left - next question
+                if (!nextBtn.disabled) nextBtn.click();
+            } else if (touchEndX > touchStartX + 50) {
+                // Swipe right - previous question
+                if (!prevBtn.disabled) prevBtn.click();
+            }
+        }
+    </script>
 </body>
 </html>
