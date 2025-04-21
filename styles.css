@@ -1,115 +1,164 @@
-// Add this array at the top with other constants
-const ENTRANCE_ANIMATIONS = ['slide-in-right', 'slide-in-left', 'zoom-in', 'flip-in'];
-const EXIT_ANIMATIONS = ['slide-out-left', 'slide-out-right', 'zoom-out', 'fade-out'];
-
-// Update the showQuestion function
-function showQuestion(index) {
-    if (index >= questions.length) {
-        completePoll();
-        return;
-    }
-    
-    const question = questions[index];
-    const questionCards = document.querySelectorAll('.question-card');
-    const activeCard = document.querySelector('.question-card.active');
-    
-    // Exit animation for current card
-    if (activeCard) {
-        const randomExitAnim = EXIT_ANIMATIONS[Math.floor(Math.random() * EXIT_ANIMATIONS.length)];
-        activeCard.classList.remove('active');
-        activeCard.classList.add(randomExitAnim);
-        
-        setTimeout(() => {
-            activeCard.classList.remove(randomExitAnim);
-            activeCard.style.display = 'none';
-        }, 600);
-    }
-    
-    // Create new card if needed
-    let card;
-    if (questionCards.length > 1) {
-        card = Array.from(questionCards).find(c => !c.classList.contains('active') && ![...EXIT_ANIMATIONS].some(anim => c.classList.contains(anim)));
-        card.style.display = 'flex';
-    } else {
-        card = document.createElement('div');
-        card.className = 'question-card';
-        questionContainer.appendChild(card);
-    }
-    
-    // Update progress bar
-    if (pollConfig.showProgress) {
-        const progress = ((index) / questions.length) * 100;
-        progressBar.style.width = `${progress}%`;
-    }
-    
-    // Set question text
-    card.innerHTML = `
-        <h2 class="question-text">${question.text}</h2>
-        <div class="options-container"></div>
-        <button class="next-btn" ${question.required ? 'disabled' : ''}>
-            ${index === questions.length - 1 ? 'Submit Answers' : 'Continue'}
-            <span class="arrow">→</span>
-        </button>
-    `;
-    
-    // Add options
-    const optionsContainer = card.querySelector('.options-container');
-    question.options.forEach(option => {
-        const optionBtn = document.createElement('button');
-        optionBtn.className = 'option-btn';
-        optionBtn.textContent = option.text;
-        optionBtn.dataset.value = option.value;
-        optionBtn.addEventListener('click', () => {
-            selectOption(optionBtn, card);
-            optionBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-        optionsContainer.appendChild(optionBtn);
-    });
-    
-    // Add event listener to next button
-    const nextBtn = card.querySelector('.next-btn');
-    nextBtn.addEventListener('click', () => goToNextQuestion(card));
-    
-    // Activate new card with random animation
-    setTimeout(() => {
-        const randomEntranceAnim = ENTRANCE_ANIMATIONS[Math.floor(Math.random() * ENTRANCE_ANIMATIONS.length)];
-        card.classList.add(randomEntranceAnim);
-        
-        // After animation completes, switch to active state
-        setTimeout(() => {
-            card.classList.remove(randomEntranceAnim);
-            card.classList.add('active');
-        }, 700);
-        
-        // Focus on the first option
-        const firstOption = card.querySelector('.option-btn');
-        if (firstOption) firstOption.focus();
-    }, 50);
+:root {
+    --primary-color: #5c4dff;
+    --secondary-color: #3a2eff;
+    --accent-color: #ff4d8d;
+    --text-color: #f0f0f0;
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    --option-bg: #2a2a2a;
 }
 
-// Update the next button style in the completion screen too
-.restart-btn {
+/* ... (keep previous styles) ... */
+
+/* Enhanced Next Button */
+.next-btn {
     display: block;
     width: 100%;
     max-width: 300px;
-    margin: 20px auto 0;
+    margin: 30px auto 0;
     padding: 18px;
     border: none;
     border-radius: 50px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, var(--accent-color), #ff6b9d);
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(92, 77, 255, 0.4);
+    box-shadow: 0 5px 15px rgba(255, 77, 141, 0.4);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
 }
 
-.restart-btn:hover {
+.next-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.next-btn:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(92, 77, 255, 0.6);
+    box-shadow: 0 10px 25px rgba(255, 77, 141, 0.6);
+}
+
+.next-btn:hover::before {
+    left: 100%;
+}
+
+.next-btn:active {
+    transform: translateY(0);
+}
+
+.next-btn:disabled {
+    background: #444;
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.next-btn:disabled::before {
+    display: none;
+}
+
+/* Random Animation Classes */
+.slide-in-right {
+    animation: slideInRight 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.zoom-in {
+    animation: zoomIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.flip-in {
+    animation: flipIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    transform-origin: top center;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes flipIn {
+    from { transform: rotateX(90deg); opacity: 0; }
+    to { transform: rotateX(0); opacity: 1; }
+}
+
+/* Exit Animations */
+.slide-out-left {
+    animation: slideOutLeft 0.6s cubic-bezier(0.755, 0.05, 0.855, 0.06) forwards;
+}
+
+.slide-out-right {
+    animation: slideOutRight 0.6s cubic-bezier(0.755, 0.05, 0.855, 0.06) forwards;
+}
+
+.zoom-out {
+    animation: zoomOut 0.6s cubic-bezier(0.755, 0.05, 0.855, 0.06) forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.6s ease forwards;
+}
+
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes zoomOut {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.8); opacity: 0; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Dark theme adjustments */
+.option-btn {
+    background: var(--option-bg);
+    color: var(--text-color);
+    border: 1px solid #444;
+}
+
+.option-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.option-btn.selected {
+    border-color: var(--accent-color);
+}
+
+.poll-header {
+    background: linear-gradient(135deg, #2a2a2a, #121212);
+    border-bottom: 1px solid #444;
 }
