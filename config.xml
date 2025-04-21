@@ -1,0 +1,33 @@
+<poll_config>
+    <texts>
+        <title>Modern Interactive Poll</title>
+        <welcome>Please help us improve by answering a few questions</welcome>
+        <next_button>Next</next_button>
+        <prev_button>Previous</prev_button>
+        <submit_button>Submit</submit_button>
+        <thank_you>
+            <heading>Thank You!</heading>
+            <message>Your responses have been recorded.</message>
+        </thank_you>
+        <validation>
+            <required>Please provide an answer to this question</required>
+            <email>Please enter a valid email address</email>
+        </validation>
+    </texts>
+    <questions>
+        <question type="image_preference">
+            <text>Which design do you prefer?</text>
+            <image_left src="design1.jpg" alt="Minimalist Design"/>
+            <image_right src="design2.jpg" alt="Detailed Design"/>
+        </question>
+        <question type="options">
+            <text>How often do you shop online?</text>
+            <options>
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+                <option>Rarely</option>
+            </options>
+        </question>
+    </questions>
+</poll_config>
