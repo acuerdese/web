@@ -20,19 +20,27 @@
             <div class="question-card active">
                 <h2 class="question-text">Loading questions...</h2>
                 <div class="options-container"></div>
-                <button class="next-btn" disabled>Loading...</button>
+                <button class="next-btn" disabled>
+                    <span class="btn-text">Loading...</span>
+                    <span class="btn-arrow">→</span>
+                </button>
             </div>
         </div>
     </div>
 
     <div class="completion-screen hidden">
-        <h2>Thank you for completing the poll!</h2>
-        <p>Your responses have been recorded.</p>
-        <button class="restart-btn">Take Another Poll</button>
+        <div class="completion-content">
+            <h2>Thank you for completing the poll!</h2>
+            <p>Your responses have been recorded.</p>
+            <button class="restart-btn">
+                <span>Take Another Poll</span>
+                <span class="btn-arrow">↻</span>
+            </button>
+        </div>
     </div>
 
     <div class="swipe-hint">
-        <span class="swipe-icon">← Swipe →</span>
+        <span class="swipe-icon">← Swipe to continue →</span>
     </div>
 
     <script src="script.js"></script>
