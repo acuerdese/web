@@ -1,229 +1,59 @@
-:root {
-    --primary-color: #6c5ce7;
-    --secondary-color: #a29bfe;
-    --accent-color: #fd79a8;
-    --text-color: #2d3436;
-    --bg-color: #f7f7f7;
-    --card-bg: #ffffff;
-    --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Concert One', cursive;
-}
-
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.poll-container {
-    width: 100%;
-    max-width: 600px;
-    background: var(--card-bg);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    position: relative;
-}
-
-.poll-header {
-    padding: 25px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    text-align: center;
-}
-
-.poll-header h1 {
-    font-size: 2rem;
-    margin-bottom: 15px;
-}
-
-.progress-container {
-    width: 100%;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: white;
-    border-radius: 5px;
-    transition: width 0.5s ease;
-}
-
-.question-container {
-    position: relative;
-    min-height: 400px;
-    overflow: hidden;
-}
-
-.question-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 30px;
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.question-card.active {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.question-card.exiting {
-    transform: translateX(-100%);
-    opacity: 0;
-}
-
-.question-text {
-    font-size: 1.5rem;
-    margin-bottom: 30px;
-    color: var(--text-color);
-}
+/* Add these new styles to your existing CSS */
 
 .options-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
     margin-bottom: 30px;
+    max-height: 300px; /* Limit height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 10px; /* Space for scrollbar */
+    scroll-behavior: smooth; /* Smooth scrolling */
 }
 
-.option-btn {
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
+/* Custom scrollbar styling */
+.options-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.options-container::-webkit-scrollbar-track {
     background: var(--bg-color);
-    color: var(--text-color);
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
+    border-radius: 10px;
 }
 
-.option-btn::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0%;
-    height: 100%;
+.options-container::-webkit-scrollbar-thumb {
     background: var(--secondary-color);
-    transition: width 0.3s ease;
-    z-index: 0;
+    border-radius: 10px;
 }
 
-.option-btn:hover::after {
-    width: 5px;
-}
-
-.option-btn.selected {
+.options-container::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color);
-    color: white;
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.option-btn.selected::after {
-    width: 10px;
-    background: var(--accent-color);
+/* For Firefox */
+.options-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) var(--bg-color);
+}
+
+/* Adjust question card height */
+.question-card {
+    min-height: 400px; /* Ensure enough space for scrolling */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make options container take available space */
+.question-text {
+    flex-shrink: 0;
+}
+
+.options-container {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: auto;
 }
 
 .next-btn {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    background: var(--primary-color);
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 20px;
-}
-
-.next-btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.next-btn:active {
-    transform: translateY(0);
-}
-
-.next-btn:disabled {
-    background: #b2b2b2;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.completion-screen {
-    text-align: center;
-    padding: 40px;
-    background: var(--card-bg);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    max-width: 600px;
-    width: 100%;
-}
-
-.completion-screen h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-}
-
-.completion-screen p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-}
-
-.restart-btn {
-    padding: 15px 30px;
-    border: none;
-    border-radius: 10px;
-    background: var(--accent-color);
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.restart-btn:hover {
-    background: #ff6b9d;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.hidden {
-    display: none;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    flex-shrink: 0;
 }
