@@ -1,12 +1,13 @@
 :root {
-    --primary-color: #5c4dff;
-    --secondary-color: #3a2eff;
-    --accent-color: #ff4d8d;
-    --text-color: #f0f0f0;
+    --primary-color: #6c5ce7;
+    --secondary-color: #5649c7;
+    --accent-color: #fd79a8;
+    --text-color: #f8f9fa;
     --bg-color: #121212;
     --card-bg: #1e1e1e;
     --option-bg: #2a2a2a;
-    --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -14,6 +15,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Concert One', cursive;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -24,6 +26,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    touch-action: pan-y;
 }
 
 .poll-container {
@@ -38,22 +41,23 @@ body {
 
 .poll-header {
     padding: 25px;
-    background: linear-gradient(135deg, #2a2a2a, #121212);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     text-align: center;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .poll-header h1 {
     font-size: 2rem;
     margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .progress-container {
     width: 100%;
-    height: 10px;
+    height: 8px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
 }
 
@@ -61,13 +65,13 @@ body {
     height: 100%;
     width: 0%;
     background: var(--accent-color);
-    border-radius: 5px;
-    transition: width 0.5s ease;
+    border-radius: 4px;
+    transition: width 0.5s var(--ease);
 }
 
 .question-container {
     position: relative;
-    min-height: 400px;
+    min-height: 60vh;
     overflow: hidden;
 }
 
@@ -76,116 +80,122 @@ body {
     top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
     padding: 30px;
-    opacity: 0;
     display: flex;
     flex-direction: column;
-    min-height: 400px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: none;
+}
+
+.question-card.active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.6s var(--ease);
+}
+
+.question-card.exiting {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: all 0.6s var(--ease);
 }
 
 .question-text {
-    flex-shrink: 0;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin-bottom: 30px;
     color: var(--text-color);
+    line-height: 1.3;
 }
 
 .options-container {
-    flex-grow: 1;
-    flex-shrink: 1;
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-bottom: 30px;
-    max-height: 300px;
+    margin-bottom: 20px;
+    max-height: 50vh;
     overflow-y: auto;
     padding-right: 10px;
     scroll-behavior: smooth;
 }
 
 .options-container::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .options-container::-webkit-scrollbar-track {
-    background: var(--bg-color);
-    border-radius: 10px;
+    background: transparent;
 }
 
 .options-container::-webkit-scrollbar-thumb {
-    background: var(--secondary-color);
-    border-radius: 10px;
-}
-
-.options-container::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color);
+    border-radius: 3px;
 }
 
 .option-btn {
-    padding: 15px;
-    border: 1px solid #444;
-    border-radius: 10px;
+    padding: 18px 20px;
+    border: none;
+    border-radius: 12px;
     background: var(--option-bg);
     color: var(--text-color);
     font-size: 1.1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s var(--ease);
     text-align: left;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .option-btn:hover {
-    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .option-btn.selected {
     background: var(--primary-color);
     color: white;
-    border-color: var(--accent-color);
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(108, 92, 231, 0.4);
 }
 
 .next-btn {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    max-width: 300px;
-    margin: 30px auto 0;
-    padding: 18px;
+    padding: 20px 25px;
     border: none;
-    border-radius: 50px;
-    background: linear-gradient(135deg, var(--accent-color), #ff6b9d);
+    border-radius: 15px;
+    background: linear-gradient(135deg, var(--accent-color), #ff8fab);
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(255, 77, 141, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    transition: all 0.4s var(--ease);
+    box-shadow: 0 5px 20px rgba(253, 121, 168, 0.3);
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.next-btn .btn-text {
+    flex: 1;
+    text-align: center;
     font-weight: bold;
 }
 
-.next-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: 0.5s;
+.next-btn .btn-arrow {
+    font-size: 1.4rem;
+    transition: transform 0.3s var(--ease);
 }
 
 .next-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(255, 77, 141, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(253, 121, 168, 0.4);
 }
 
-.next-btn:hover::before {
-    left: 100%;
+.next-btn:hover .btn-arrow {
+    transform: translateX(5px);
 }
 
 .next-btn:active {
@@ -197,148 +207,73 @@ body {
     transform: none;
     box-shadow: none;
     cursor: not-allowed;
-}
-
-.next-btn:disabled::before {
-    display: none;
+    opacity: 0.7;
 }
 
 .completion-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--card-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s var(--ease);
+    z-index: 100;
+}
+
+.completion-screen.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.completion-content {
     text-align: center;
     padding: 40px;
-    background: var(--card-bg);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    max-width: 600px;
-    width: 100%;
-    animation: fadeIn 0.5s ease;
+    max-width: 500px;
 }
 
 .completion-screen h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-    color: var(--primary-color);
+    color: var(--accent-color);
 }
 
 .completion-screen p {
     font-size: 1.2rem;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    opacity: 0.8;
 }
 
 .restart-btn {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     width: 100%;
-    max-width: 300px;
-    margin: 20px auto 0;
-    padding: 18px;
+    padding: 20px;
     border: none;
-    border-radius: 50px;
+    border-radius: 15px;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(92, 77, 255, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: bold;
+    transition: all 0.4s var(--ease);
+    box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
 }
 
 .restart-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(92, 77, 255, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
 }
 
-.hidden {
-    display: none;
+.restart-btn:active {
+    transform: translateY(0);
 }
-
-/* Animation Classes */
-.slide-in-right {
-    animation: slideInRight 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-}
-
-.slide-in-left {
-    animation: slideInLeft 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-}
-
-.zoom-in {
-    animation: zoomIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-}
-
-.flip-in {
-    animation: flipIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-    transform-origin: top center;
-}
-
-.slide-out-left {
-    animation: slideOutLeft 0.6s cubic-bezier(0.755, 0.05, 0.855, 0.06) forwards;
-}
-
-.slide-out-right {
-    animation: slideOutRight 0.6s cubic-bezier(0.755, 0.05, 0.855, 0.06) forwards;
-}
-
-.zoom-out {
-    animation: zoomOut 0.6s cubic-bezier(0.755, 0.05, 0.855, 0.06) forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.6s ease forwards;
-}
-
-.active {
-    opacity: 1;
-    transform: none;
-}
-
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideInLeft {
-    from { transform: translateX(-100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes zoomIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes flipIn {
-    from { transform: rotateX(90deg); opacity: 0; }
-    to { transform: rotateX(0); opacity: 1; }
-}
-
-@keyframes slideOutLeft {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(-100%); opacity: 0; }
-}
-
-@keyframes slideOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-}
-
-@keyframes zoomOut {
-    from { transform: scale(1); opacity: 1; }
-    to { transform: scale(0.8); opacity: 0; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-/* Add these new styles to your existing CSS */
 
 .swipe-hint {
     position: fixed;
@@ -347,9 +282,10 @@ body {
     right: 0;
     text-align: center;
     color: rgba(255, 255, 255, 0.7);
-    font-size: 1rem;
+    font-size: 0.9rem;
     pointer-events: none;
     animation: pulse 2s infinite;
+    z-index: 10;
 }
 
 .swipe-icon {
@@ -357,39 +293,49 @@ body {
     padding: 8px 20px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 20px;
+    backdrop-filter: blur(5px);
 }
 
 @keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-}
-
-.next-btn {
-    /* Make sure the button is always visible */
-    position: relative;
-    z-index: 10;
-    margin-bottom: 40px; /* Space for swipe hint */
-}
-
-/* Make sure question container takes full height */
-.question-container {
-    min-height: 60vh;
+    0% { opacity: 0.5; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0.5; transform: scale(0.98); }
 }
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+    
     .poll-container {
         border-radius: 0;
         min-height: 100vh;
+        max-width: 100%;
     }
     
     .question-card {
-        padding: 20px;
+        padding: 25px 20px;
     }
     
-    .next-btn {
-        max-width: 100%;
-        margin-bottom: 60px;
+    .question-text {
+        font-size: 1.4rem;
+        margin-bottom: 25px;
+    }
+    
+    .options-container {
+        max-height: 55vh;
+    }
+    
+    .option-btn {
+        padding: 16px 18px;
+    }
+    
+    .next-btn, .restart-btn {
+        padding: 18px 20px;
+    }
+    
+    .swipe-hint {
+        bottom: 15px;
     }
 }
