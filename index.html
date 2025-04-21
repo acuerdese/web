@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Modern Interactive Poll</title>
     <link href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -16,7 +16,7 @@
             </div>
         </div>
         
-        <div class="question-container">
+        <div class="question-container" id="swipe-area">
             <div class="question-card active">
                 <h2 class="question-text">Loading questions...</h2>
                 <div class="options-container"></div>
@@ -29,6 +29,10 @@
         <h2>Thank you for completing the poll!</h2>
         <p>Your responses have been recorded.</p>
         <button class="restart-btn">Take Another Poll</button>
+    </div>
+
+    <div class="swipe-hint">
+        <span class="swipe-icon">← Swipe →</span>
     </div>
 
     <script src="script.js"></script>
