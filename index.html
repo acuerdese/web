@@ -3,38 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Poll</title>
+    <title>Modern Interactive Poll</title>
+    <link href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="poll-container">
-        <div class="progress-bar">
-            <div class="progress"></div>
-        </div>
-        
-        <div class="poll-content">
-            <h1 class="poll-title">Loading poll...</h1>
-            <p class="poll-description"></p>
-            
-            <div class="question-container">
-                <!-- Questions will be injected here by JavaScript -->
-            </div>
-            
-            <div class="navigation">
-                <button class="nav-button prev" disabled>Back</button>
-                <button class="nav-button next">Next</button>
-                <button class="nav-button submit" style="display: none;">Submit</button>
+        <div class="poll-header">
+            <h1 id="poll-title">Modern Poll</h1>
+            <div class="progress-container">
+                <div class="progress-bar"></div>
             </div>
         </div>
         
-        <div class="thank-you" style="display: none;">
-            <h2>Thank You!</h2>
-            <p class="thank-you-message"></p>
-            <button class="restart-button">Submit another response</button>
+        <div class="question-container">
+            <div class="question-card active">
+                <h2 class="question-text">Loading questions...</h2>
+                <div class="options-container"></div>
+                <button class="next-btn" disabled>Loading...</button>
+            </div>
         </div>
     </div>
-    
+
+    <div class="completion-screen hidden">
+        <h2>Thank you for completing the poll!</h2>
+        <p>Your responses have been recorded.</p>
+        <button class="restart-btn">Take Another Poll</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
