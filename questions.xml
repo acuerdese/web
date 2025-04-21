@@ -27,20 +27,4 @@
         <option value="hbo">HBO Max</option>
         <option value="none">None</option>
     </question>
-    
-    <question required="true">
-        <text>How important is sustainability in your purchasing decisions?</text>
-        <option value="very">Very important</option>
-        <option value="somewhat">Somewhat important</option>
-        <option value="neutral">Neutral</option>
-        <option value="not">Not important</option>
-    </question>
-    
-    <question required="true">
-        <text>What's your preferred way to communicate with friends?</text>
-        <option value="text">Text messaging</option>
-        <option value="social">Social media</option>
-        <option value="video">Video calls</option>
-        <option value="inperson">In person</option>
-    </question>
 </poll>
