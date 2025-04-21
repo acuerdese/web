@@ -338,3 +338,58 @@ body {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+/* Add these new styles to your existing CSS */
+
+.swipe-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    pointer-events: none;
+    animation: pulse 2s infinite;
+}
+
+.swipe-icon {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+.next-btn {
+    /* Make sure the button is always visible */
+    position: relative;
+    z-index: 10;
+    margin-bottom: 40px; /* Space for swipe hint */
+}
+
+/* Make sure question container takes full height */
+.question-container {
+    min-height: 60vh;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .poll-container {
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    
+    .question-card {
+        padding: 20px;
+    }
+    
+    .next-btn {
+        max-width: 100%;
+        margin-bottom: 60px;
+    }
+}
