@@ -1,59 +1,115 @@
-/* Add these new styles to your existing CSS */
+// Add this array at the top with other constants
+const ENTRANCE_ANIMATIONS = ['slide-in-right', 'slide-in-left', 'zoom-in', 'flip-in'];
+const EXIT_ANIMATIONS = ['slide-out-left', 'slide-out-right', 'zoom-out', 'fade-out'];
 
-.options-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
-    max-height: 300px; /* Limit height */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding-right: 10px; /* Space for scrollbar */
-    scroll-behavior: smooth; /* Smooth scrolling */
+// Update the showQuestion function
+function showQuestion(index) {
+    if (index >= questions.length) {
+        completePoll();
+        return;
+    }
+    
+    const question = questions[index];
+    const questionCards = document.querySelectorAll('.question-card');
+    const activeCard = document.querySelector('.question-card.active');
+    
+    // Exit animation for current card
+    if (activeCard) {
+        const randomExitAnim = EXIT_ANIMATIONS[Math.floor(Math.random() * EXIT_ANIMATIONS.length)];
+        activeCard.classList.remove('active');
+        activeCard.classList.add(randomExitAnim);
+        
+        setTimeout(() => {
+            activeCard.classList.remove(randomExitAnim);
+            activeCard.style.display = 'none';
+        }, 600);
+    }
+    
+    // Create new card if needed
+    let card;
+    if (questionCards.length > 1) {
+        card = Array.from(questionCards).find(c => !c.classList.contains('active') && ![...EXIT_ANIMATIONS].some(anim => c.classList.contains(anim)));
+        card.style.display = 'flex';
+    } else {
+        card = document.createElement('div');
+        card.className = 'question-card';
+        questionContainer.appendChild(card);
+    }
+    
+    // Update progress bar
+    if (pollConfig.showProgress) {
+        const progress = ((index) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+    
+    // Set question text
+    card.innerHTML = `
+        <h2 class="question-text">${question.text}</h2>
+        <div class="options-container"></div>
+        <button class="next-btn" ${question.required ? 'disabled' : ''}>
+            ${index === questions.length - 1 ? 'Submit Answers' : 'Continue'}
+            <span class="arrow">→</span>
+        </button>
+    `;
+    
+    // Add options
+    const optionsContainer = card.querySelector('.options-container');
+    question.options.forEach(option => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = 'option-btn';
+        optionBtn.textContent = option.text;
+        optionBtn.dataset.value = option.value;
+        optionBtn.addEventListener('click', () => {
+            selectOption(optionBtn, card);
+            optionBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        optionsContainer.appendChild(optionBtn);
+    });
+    
+    // Add event listener to next button
+    const nextBtn = card.querySelector('.next-btn');
+    nextBtn.addEventListener('click', () => goToNextQuestion(card));
+    
+    // Activate new card with random animation
+    setTimeout(() => {
+        const randomEntranceAnim = ENTRANCE_ANIMATIONS[Math.floor(Math.random() * ENTRANCE_ANIMATIONS.length)];
+        card.classList.add(randomEntranceAnim);
+        
+        // After animation completes, switch to active state
+        setTimeout(() => {
+            card.classList.remove(randomEntranceAnim);
+            card.classList.add('active');
+        }, 700);
+        
+        // Focus on the first option
+        const firstOption = card.querySelector('.option-btn');
+        if (firstOption) firstOption.focus();
+    }, 50);
 }
 
-/* Custom scrollbar styling */
-.options-container::-webkit-scrollbar {
-    width: 8px;
+// Update the next button style in the completion screen too
+.restart-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto 0;
+    padding: 18px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(92, 77, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
 }
 
-.options-container::-webkit-scrollbar-track {
-    background: var(--bg-color);
-    border-radius: 10px;
-}
-
-.options-container::-webkit-scrollbar-thumb {
-    background: var(--secondary-color);
-    border-radius: 10px;
-}
-
-.options-container::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-color);
-}
-
-/* For Firefox */
-.options-container {
-    scrollbar-width: thin;
-    scrollbar-color: var(--secondary-color) var(--bg-color);
-}
-
-/* Adjust question card height */
-.question-card {
-    min-height: 400px; /* Ensure enough space for scrolling */
-    display: flex;
-    flex-direction: column;
-}
-
-/* Make options container take available space */
-.question-text {
-    flex-shrink: 0;
-}
-
-.options-container {
-    flex-grow: 1;
-    flex-shrink: 1;
-    overflow-y: auto;
-}
-
-.next-btn {
-    flex-shrink: 0;
+.restart-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(92, 77, 255, 0.6);
 }
