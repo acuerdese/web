@@ -7,400 +7,229 @@
     <style>
         body {
             margin: 0;
+            font-family: Arial, sans-serif;
             background-color: #000;
             color: #fff;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s;
         }
-        body.light {
+        .white-bg {
             background-color: #fff;
             color: #000;
         }
-        .carousel {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            scroll-behavior: smooth;
+        .carousel-container {
+            max-width: 800px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
         }
-        .carousel::-webkit-scrollbar {
-            display: none;
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
         }
         .carousel-item {
-            flex: 0 0 100%;
-            height: 100vh;
-            scroll-snap-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
+            min-width: 100%;
             box-sizing: border-box;
-        }
-        /* Reproductor de video */
-        #video-player {
-            width: 90%;
-            max-width: 600px;
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #video-player video {
-            width: 100%;
-            height: 80%;
-            background: #222;
-            border: 1px solid #444;
-            transition: background 0.3s, border 0.3s;
-        }
-        body.light #video-player video {
-            background: #f0f0f0;
-            border: 1px solid #ccc;
-        }
-        #video-player input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: #222;
-            color: #fff;
-            border: 1px solid #444;
-            transition: background 0.3s, color 0.3s, border 0.3s;
-        }
-        body.light #video-player input {
-            background: #f0f0f0;
-            color: #000;
-            border: 1px solid #ccc;
-        }
-        #video-player button {
-            background: #444;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background 0.3s, color 0.3s;
-        }
-        body.light #video-player button {
-            background: #ccc;
-            color: #000;
-        }
-        /* Bloc de notas */
-        #notepad {
-            width: 90%;
-            max-width: 600px;
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-        }
-        #notepad textarea {
-            flex-grow: 1;
-            background: #222;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 10px;
-            font-size: 16px;
-            resize: none;
-            transition: background 0.3s, color 0.3s, border 0.3s;
-        }
-        body.light #notepad textarea {
-            background: #f0f0f0;
-            color: #000;
-            border: 1px solid #ccc;
-        }
-        #notepad button {
-            background: #444;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: background 0.3s, color 0.3s;
-        }
-        body.light #notepad button {
-            background: #ccc;
-            color: #000;
-        }
-        /* Juego */
-        #game-container {
-            width: 90%;
-            max-width: 400px;
+            padding: 20px;
             text-align: center;
         }
-        #game-canvas {
-            background: #222;
-            border: 1px solid #444;
-            width: 100%;
-            max-width: 400px;
-            height: 500px;
-            transition: background 0.3s, border 0.3s;
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            user-select: none;
         }
-        body.light #game-canvas {
-            background: #f0f0f0;
-            border: 1px solid #ccc;
+        .carousel-container:hover .arrow {
+            opacity: 1;
         }
-        #start-button {
-            background: #444;
+        .left-arrow {
+            left: 10px;
+        }
+        .right-arrow {
+            right: 10px;
+        }
+        #toggle-bg {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            cursor: pointer;
+            background: #333;
             color: #fff;
             border: none;
-            padding: 10px 20px;
-            margin: 10px 0;
-            cursor: pointer;
-            transition: background 0.3s, color 0.3s;
+            border-radius: 5px;
         }
-        body.light #start-button {
+        .white-bg #toggle-bg {
             background: #ccc;
             color: #000;
         }
-        /* GIF */
-        #gif-container {
-            width: 90%;
-            max-width: 600px;
-            height: 80%;
-        }
-        #gif-container img {
+        #notepad {
             width: 100%;
-            height: 100%;
-            object-fit: contain;
+            height: 300px;
+            resize: none;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
         }
-        /* Switch ON/OFF */
-        .switch-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+        .white-bg #notepad {
+            background: #fff;
+            color: #000;
+            border: 1px solid #ccc;
         }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        /* Flechas de navegación */
-        .nav-arrow {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
+        #download-btn {
+            margin-top: 10px;
+            padding: 10px;
+            background: #333;
             color: #fff;
             border: none;
-            padding: 5px;
             cursor: pointer;
-            font-size: 24px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
         }
-        body.light .nav-arrow {
+        .white-bg #download-btn {
+            background: #ccc;
             color: #000;
         }
-        #arrow-container-left:hover .nav-arrow, #arrow-container-right:hover .nav-arrow {
-            opacity: 0.6;
+        #brickBreakerCanvas {
+            background: #000;
+            border: 1px solid #444;
         }
-        #prev-arrow {
-            left: 10px;
+        .white-bg #brickBreakerCanvas {
+            background: #fff;
+            border: 1px solid #ccc;
         }
-        #next-arrow {
-            right: 10px;
+        #random-gif {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
         }
-        .arrow-container {
-            position: fixed;
-            top: 0;
-            height: 100vh;
-            width: 50px;
-            z-index: 999;
-        }
-        #arrow-container-left {
-            left: 0;
-        }
-        #arrow-container-right {
-            right: 0;
-        }
-        @media (orientation: portrait) {
+        @media (max-width: 600px) {
+            .carousel-container {
+                margin: 10px;
+            }
             .carousel-item {
-                padding: 20px;
+                padding: 10px;
             }
-        }
-        @media (orientation: landscape) {
-            #game-canvas {
-                height: 300px;
+            #notepad {
+                height: 200px;
             }
-            #video-player, #notepad, #gif-container {
-                height: 70%;
+            #brickBreakerCanvas {
+                width: 100%;
+                height: auto;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Switch ON/OFF -->
-    <div class="switch-container">
-        <label class="switch">
-            <input type="checkbox" id="theme-switch">
-            <span class="slider"></span>
-        </label>
-    </div>
-    <!-- Contenedores para flechas -->
-    <div id="arrow-container-left" class="arrow-container">
-        <button id="prev-arrow" class="nav-arrow">←</button>
-    </div>
-    <div id="arrow-container-right" class="arrow-container">
-        <button id="next-arrow" class="nav-arrow">→</button>
-    </div>
-    <!-- Carrusel -->
-    <div class="carousel">
-        <!-- Reproductor de video -->
-        <div class="carousel-item">
-            <div id="video-player">
-                <video id="stream-video" controls></video>
-                <input id="stream-url" type="text" placeholder="Pega el enlace M3U8, HLS o MP4 aquí" value="https://akmzed.cloud/_v1_akmzed/wlGb1SKRfqNcc5tKEyB6WND8btdccfYKv9NO7qvXc5E=/aW5kZXgubTN1OA==.m3u8">
-                <button onclick="loadStream()">Reproducir</button>
+    <button id="toggle-bg">ON/OFF</button>
+    <div class="carousel-container">
+        <div class="carousel" id="carousel">
+            <!-- Bloc de notas -->
+            <div class="carousel-item">
+                <h2>Bloc de Notas</h2>
+                <textarea id="notepad" placeholder="Escribe aquí..."></textarea>
+                <br>
+                <button id="download-btn">Descargar como TXT</button>
             </div>
-        </div>
-        <!-- Bloc de Notas -->
-        <div class="carousel-item">
-            <div id="notepad">
-                <textarea id="note-text" placeholder="Escribe aquí..."></textarea>
-                <button onclick="exportToTxt()">Exportar a TXT</button>
+            <!-- Juego Brick Breaker -->
+            <div class="carousel-item">
+                <h2>Brick Breaker</h2>
+                <canvas id="brickBreakerCanvas" width="600" height="400"></canvas>
+                <p>Usa ←/→ o A/D para mover, Espacio para iniciar. En móviles, desliza el dedo.</p>
             </div>
-        </div>
-        <!-- Juego Brick Breaker -->
-        <div class="carousel-item">
-            <div id="game-container">
-                <canvas id="game-canvas"></canvas>
-                <button id="start-button">Comenzar</button>
+            <!-- GIF Ale -->
+            <!-- -->
+            <div class="carousel-item">
+                <h2>GIF Aleatorio</h2>
+                <img id="random-gif" src="https://icegif.com/wp-content/uploads/2023/03/icegif-180.gif" alt="GIF Aleatorio">
             </div>
+            
         </div>
-        <!-- GIF Aleatorio -->
-        <div class="carousel-item">
-            <div id="gif-container">
-                <img id="random-gif" src="" alt="GIF Aleatorio">
-            </div>
-        </div>
+        <div class="arrow left-arrow" id="prev">&larr;</div>
+        <div class="arrow right-arrow" id="next">&lt;/rarr;</div>
     </div>
 
     <script>
-        // Cambiar tema (fondo negro/blanco)
-        const themeSwitch = document.getElementById('theme-switch');
-        themeSwitch.addEventListener('change', () => {
-            document.body.classList.toggle('light');
-        });
-
-        // Navegación con flechas
-        const carousel = document.querySelector('.carousel');
-        const prevArrow = document.getElementById('prev-arrow');
-        const nextArrow = document.getElementById('next-arrow');
+        // Carrusel
+        const carousel = document.getElementById("carousel");
+        const prevBtn = document.getElementById("prev");
+        const nextBtn = document.getElementById("next");
         let currentIndex = 0;
-
-        function scrollToItem(index) {
-            carousel.scrollTo({
-                left: index * carousel.clientWidth,
-                behavior: 'smooth'
-            });
-            currentIndex = index;
+        function updateCarousel() {
+            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
 
-        prevArrow.addEventListener('click', () => {
-            if (currentIndex > 0 && !gameRunning) {
-                scrollToItem(currentIndex - 1);
-            }
+        prevBtn.addEventListener("click", function() {
+            currentIndex = currentIndex > 0 ? currentIndex - 1 : 2;
+            updateCarousel();
         });
 
-        nextArrow.addEventListener('click', () => {
-            if (currentIndex < 3 && !gameRunning) {
-                scrollToItem(currentIndex + 1);
-            }
+        nextBtn.addEventListener("click", function() {
+            currentIndex = currentIndex < 1 ? currentIndex + 2 : 0;
+            updateCarousel();
         });
 
-        // Reproductor de video
-        function loadStream() {
-            const video = document.getElementById('stream-video');
-            const url = document.getElementById('stream-url').value;
-            if (url) {
-                video.src = url;
-                video.play().catch(e => {
-                    alert('Error al reproducir: ' + e.message + '. Asegúrate de usar una URL HTTPS válida y que el servidor permita CORS.');
-                });
-            } else {
-                alert('Por favor, ingresa un enlace válido.');
-            }
-        }
+        // Alternar fondo
+        const toggleBgBtn = document.getElementById("toggle-bg");
+        toggleBgBtn.addEventListener("click", () => {
+            document.body.classList.toggle("white-bg");
+        });
 
-        // Exportar Bloc de Notas a TXT
-        function exportToTxt() {
-            const text = document.getElementById('note-text').value;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+        // Bloc de notas
+        const notepad = document.getElementById("notepad");
+        const downloadBtn = document.getElementById("download-btn");
+        downloadBtn.addEventListener("click", function() {
+            let blob = new Blob([notepad.value], {type: "text/plain"});
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
             a.href = url;
-            a.download = 'notas.txt';
+            a.download = "nota.txt";
             a.click();
-            URL.revokeObjectURL(url);
-        }
+            window.URL.revokeObjectURL(url");
+        });
 
-        // Juego Brick Breaker
-        const canvas = document.getElementById('game-canvas');
-        const ctx = canvas.getContext('2d');
-        const startButton = document.getElementById('start-button');
-        let gameRunning = false;
-        let paddleX, ballX, ballY, dx, dy, paddleWidth = 75, paddleHeight = 10;
-        let bricks = [], brickRowCount = 5, brickColumnCount = 7, brickWidth = 50, brickHeight = 20, brickPadding = 10;
-        let difficulty = 1;
+        // Juego de Brick Breaker
+        let canvas = document.getElementById("brickBreakerCanvas");
+        let ctx = canvas.getContext("2d");
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height - 30;
+        let ballRadius = 10;
+        let paddleWidth = 75;
+        let paddleHeight = 10;
+        let paddleX = (canvas.width - paddleWidth) / 2;
+        let brickRowCount = 5;
+        let brickColCount = 7;
+        let brickWidth = 75;
+        let brickHeight = 20;
+        let brickPadding = 10;
+        let brickOffsetTop = 30;
+        let brickOffsetLeft = 30;
+        let bricks = [];
+        let gameStarted = false;
+        let ballSpeedX = 4;
+        let ballSpeedY = -4;
+        let baseBallSpeed = 4;
+        let difficultyIncrement = 1.2;
 
-        function initGame() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            paddleX = (canvas.width - paddleWidth) / 2;
-            ballX = canvas.width / 2;
-            ballY = canvas.height - 30;
-            dx = 2 * difficulty;
-            dy = -2 * difficulty;
-            bricks = [];
-            for (let c = 0; c < brickColumnCount; c++) {
-                bricks[c] = [];
-                for (let r = 0; r < brickRowCount; r++) {
-                    bricks[c][r] = { x: 0, y: 0, status: 1 };
+        function initBricks() {
+            for (let row = 0; row < brickRowCount; row++) {
+                bricks[row] = [];
+                for (let col = 0; col < brickColCount; col++) {
+                    bricks[row][col] = {x: col * (brickCol + brickPadding) + brickOffsetLeft,
+                        y: row * (brickHeight + brickPadding) + brickOffsetTop,
+                        status: 1};
                 }
             }
         }
 
         function drawBall() {
             ctx.beginPath();
-            ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
-            ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = document.body.classList.contains("white-bg") ? "#000" : "#fff";
             ctx.fill();
             ctx.closePath();
         }
@@ -408,136 +237,121 @@
         function drawPaddle() {
             ctx.beginPath();
             ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
+            ctx.fillStyle = document.body.classList.contains("white-bg") ? "#000" : "#fff";
             ctx.fill();
             ctx.closePath();
         }
 
         function drawBricks() {
-            for (let c = 0; c < brickColumnCount; c++) {
-                for (let r = 0; r < brickRowCount; r++) {
-                    if (bricks[c][r].status === 1) {
-                        const brickX = c * (brickWidth + brickPadding) + 30;
-                        const brickY = r * (brickHeight + brickPadding) + 30;
-                        bricks[c][r].x = brickX;
-                        bricks[c][r].y = brickY;
-                        ctx.beginPath();
-                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
-                        ctx.fill();
-                        ctx.closePath();
-                    }
-                }
-            }
-        }
-
-        function collisionDetection() {
-            for (let c = 0; c < brickColumnCount; c++) {
-                for (let r = 0; r < brickRowCount; r++) {
-                    const b = bricks[c][r];
-                    if (b.status === 1) {
-                        if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
-                            dy = -dy;
-                            b.status = 0;
-                            if (bricks.every(col => col.every(brick => brick.status === 0))) {
-                                difficulty += 0.5; // Aumentar dificultad
-                                initGame(); // Reiniciar juego
-                            }
-                        }
+            for (let row = 0; row < brickRowCount; row++) {
+                for (let col = 0; col < brickColCount; col++) {
+                    if (bricks[row][col].status === 1) {
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(bricks[row][col].x, bricks[row][col].y, brickWidth, brickHeight);
                     }
                 }
             }
         }
 
         function draw() {
-            if (!gameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBall();
-            drawPaddle();
             drawBricks();
-            collisionDetection();
-
-            ballX += dx;
-            ballY += dy;
-
-            if (ballX + dx > canvas.width - 10 || ballX + dx < 10) dx = -dx;
-            if (ballY + dy < 10) dy = -dy;
-            else if (ballY + dy > canvas.height - 30) {
-                if (ballX > paddleX && ballX < paddleX + paddleWidth) dy = -dy;
-                else {
-                    gameRunning = false;
-                    alert('¡Juego terminado!');
-                }
-            }
-
-            requestAnimationFrame(draw);
+            drawPaddle();
+            drawBall();
         }
 
-        startButton.addEventListener('click', () => {
-            if (!gameRunning) {
-                gameRunning = true;
-                initGame();
+        function resetGame() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            baseBallSpeed *= difficultyIncrement; // Aumenta la dificultad
+            ballSpeedX = baseBallSpeed * (Math.random() > 0.5 ? 1 : -1);
+            ballSpeedY = -baseBallSpeed;
+            bricks = [];
+            initBricks();
+            gameStarted = false;
+        }
+
+        function updateGame() {
+            if (!gameStarted) {
                 draw();
+                return;
             }
-        });
 
-        // Control táctil para la paleta
-        canvas.addEventListener('touchmove', (e) => {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (ballX + ballRadius > canvas.width || ballX - ballRadius < 0) {
+                ballSpeedX = -ballSpeedX;
+            }
+            if (ballY - ballRadius < 0) {
+                ballSpeedY = -ballSpeedY;
+            }
+            if (ballY + ballRadius > canvas.height) {
+                resetGame();
+                return;
+            }
+
+            if (ballY + ballRadius > canvas.height - paddleHeight && 
+                ballX > paddleX && ballX < paddleX + paddleWidth) {
+                ballSpeedY = -ballSpeedY;
+            }
+
+            let allBricksDestroyed = true;
+            for (let row = 0; row < brickRowCount; row++) {
+                for (let col = 0; col < brickColCount; col++) {
+                    let brick = bricks[row][col];
+                    if (brick.status === 1) {
+                        allBricksDestroyed = false;
+                        if (ballX > brick.x && ballX < brick.x + brickWidth &&
+                            ballY > brick.y && ballY < brick.y + brickHeight) {
+                            ballSpeedY = -ballSpeedY;
+                            brick.status = 0;
+                        }
+                    }
+                }
+            }
+
+            if (allBricksDestroyed) {
+                resetGame();
+            }
+
+            draw();
+        }
+
+        document.addEventListener("keydown", keyDownHandler);
+        function keyDownHandler(e) {
+            if (e.key === "ArrowLeft" || e.key === "a") {
+                paddleX -= 7;
+                if (paddleX < 0) paddleX = 0;
+            } else if (e.key === "ArrowRight" || e.key === "d") {
+                paddleX += 7;
+                if (paddleX + paddleWidth > canvas.width) paddleX = canvas.width - paddleWidth;
+            } else if (e.key === " " && !gameStarted) {
+                gameStarted = true;
+            }
+        }
+
+        canvas.addEventListener("touchmove", touchMoveHandler);
+        function touchMoveHandler(e) {
             e.preventDefault();
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            paddleX = touch.clientX - rect.left - paddleWidth / 2;
-            if (paddleX < 0) paddleX = 0;
-            if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
-        });
-
-        // Control de teclado para el juego y navegación
-        document.addEventListener('keydown', (e) => {
-            if (gameRunning && document.activeElement !== document.getElementById('note-text')) {
-                // Control de la paleta en el juego
-                if (e.key === 'ArrowLeft' && paddleX > 0) {
-                    paddleX -= 10;
-                    e.preventDefault();
-                } else if (e.key === 'ArrowRight' && paddleX < canvas.width - paddleWidth) {
-                    paddleX += 10;
-                    e.preventDefault();
-                }
-            } else {
-                // Navegación del carrusel
-                if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                    scrollToItem(currentIndex - 1);
-                    e.preventDefault();
-                } else if (e.key === 'ArrowRight' && currentIndex < 3) {
-                    scrollToItem(currentIndex + 1);
-                    e.preventDefault();
-                }
+            let touch = e.touches[0];
+            let relativeX = touch.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
             }
+        }
+
+        canvas.addEventListener("touchstart", () => {
+            if (!gameStarted) gameStarted = true;
         });
 
-        // Desactivar navegación del carrusel cuando el juego está activo
-        canvas.addEventListener('focus', () => {
-            if (gameRunning) {
-                canvas.tabIndex = 0;
-            }
-        });
+        initBricks();
+        setInterval(updateGame, 1000 / 60);
 
-        canvas.addEventListener('blur', () => {
-            // Permitir navegación del carrusel cuando el juego pierde foco
-        });
-
-        // GIF Aleatorio
-        const gifs = [
-            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1264.gif',
-            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1265.gif',
-            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1266.gif'
-        ];
-        const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
-        document.getElementById('random-gif').src = randomGif;
-
-        // Ajustar canvas al cambiar orientación
-        window.addEventListener('resize', () => {
-            if (gameRunning) initGame();
-        });
+        // GIF aleatorio (simulado con uno estático por simplicidad)
+        // Nota: IceGIF no tiene una API pública, por lo que usamos un GIF de ejemplo
+        // Para GIFs dinámicos, necesitarías una API o lista predefinida
     </script>
 </body>
 </html>
