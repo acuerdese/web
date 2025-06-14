@@ -161,4 +161,314 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        /*
+        /* Flechas de navegación */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            color: #fff;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        body.light .nav-arrow {
+            color: #000;
+        }
+        #arrow-container-left:hover .nav-arrow, #arrow-container-right:hover .nav-arrow {
+            opacity: 0.6;
+        }
+        #prev-arrow {
+            left: 10px;
+        }
+        #next-arrow {
+            right: 10px;
+        }
+        .arrow-container {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: 50px;
+            z-index: 999;
+        }
+        #arrow-container-left {
+            left: 0;
+        }
+        #arrow-container-right {
+            right: 0;
+        }
+        @media (orientation: portrait) {
+            .carousel-item {
+                padding: 20px;
+            }
+        }
+        @media (orientation: landscape) {
+            #game-canvas {
+                height: 300px;
+            }
+            #notepad, #gif-container {
+                height: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Switch ON/OFF -->
+    <div class="switch-container">
+        <label class="switch">
+            <input type="checkbox" id="theme-switch">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <!-- Contenedores para flechas -->
+    <div id="arrow-container-left" class="arrow-container">
+        <button id="prev-arrow" class="nav-arrow">←</button>
+    </div>
+    <div id="arrow-container-right" class="arrow-container">
+        <button id="next-arrow" class="nav-arrow">→</button>
+    </div>
+    <!-- Carrusel -->
+    <div class="carousel">
+        <!-- Bloc de Notas -->
+        <div class="carousel-item">
+            <div id="notepad">
+                <textarea id="note-text" placeholder="Escribe aquí..."></textarea>
+                <button onclick="exportToTxt()">Exportar a TXT</button>
+            </div>
+        </div>
+        <!-- Juego Brick Breaker -->
+        <div class="carousel-item">
+            <div id="game-container">
+                <canvas id="game-canvas"></canvas>
+                <button id="start-button">Comenzar</button>
+            </div>
+        </div>
+        <!-- GIF Aleatorio -->
+        <div class="carousel-item">
+            <div id="gif-container">
+                <img id="random-gif" src="" alt="GIF Aleatorio">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cambiar tema (fondo negro/blanco)
+        const themeSwitch = document.getElementById('theme-switch');
+        themeSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('light');
+        });
+
+        // Navegación con flechas
+        const carousel = document.querySelector('.carousel');
+        const prevArrow = document.getElementById('prev-arrow');
+        const nextArrow = document.getElementById('next-arrow');
+        let currentIndex = 0;
+
+        function scrollToItem(index) {
+            carousel.scrollTo({
+                left: index * carousel.clientWidth,
+                behavior: 'smooth'
+            });
+            currentIndex = index;
+        }
+
+        prevArrow.addEventListener('click', () => {
+            if (currentIndex > 0 && !gameRunning) {
+                scrollToItem(currentIndex - 1);
+            }
+        });
+
+        nextArrow.addEventListener('click', () => {
+            if (currentIndex < 2 && !gameRunning) {
+                scrollToItem(currentIndex + 1);
+            }
+        });
+
+        // Exportar Bloc de Notas a TXT
+        function exportToTxt() {
+            const text = document.getElementById('note-text').value;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'notas.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Juego Brick Breaker
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const startButton = document.getElementById('start-button');
+        let gameRunning = false;
+        let paddleX, ballX, ballY, dx, dy, paddleWidth = 75, paddleHeight = 10;
+        let bricks = [], brickRowCount = 5, brickColumnCount = 7, brickWidth = 50, brickHeight = 20, brickPadding = 10;
+        let difficulty = 1;
+
+        function initGame() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            dx = 2 * difficulty;
+            dy = -2 * difficulty;
+            bricks = [];
+            for (let c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < brickRowCount; r++) {
+                    bricks[c][r] = { x: 0, y: 0, status: 1 };
+                }
+            }
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+            ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    if (bricks[c][r].status === 1) {
+                        const brickX = c * (brickWidth + brickPadding) + 30;
+                        const brickY = r * (brickHeight + brickPadding) + 30;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        function collisionDetection() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    const b = bricks[c][r];
+                    if (b.status === 1) {
+                        if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
+                            dy = -dy;
+                            b.status = 0;
+                            if (bricks.every(col => col.every(brick => brick.status === 0))) {
+                                gameRunning = false;
+                                difficulty += 0.5;
+                                alert('¡Ganaste! Nueva dificultad: ' + difficulty.toFixed(1));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function draw() {
+            if (!gameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            drawPaddle();
+            drawBricks();
+            collisionDetection();
+
+            ballX += dx;
+            ballY += dy;
+
+            if (ballX + dx > canvas.width - 10 || ballX + dx < 10) dx = -dx;
+            if (ballY + dy < 10) dy = -dy;
+            else if (ballY + dy > canvas.height - 30) {
+                if (ballX > paddleX && ballX < paddleX + paddleWidth) dy = -dy;
+                else {
+                    gameRunning = false;
+                    alert('¡Juego terminado!');
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        startButton.addEventListener('click', () => {
+            if (!gameRunning) {
+                gameRunning = true;
+                initGame();
+                draw();
+            }
+        });
+
+        // Control táctil para la paleta
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            paddleX = touch.clientX - rect.left - paddleWidth / 2;
+            if (paddleX < 0) paddleX = 0;
+            if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
+        });
+
+        // Control de teclado para el juego y navegación
+        document.addEventListener('keydown', (e) => {
+            if (gameRunning && document.activeElement !== document.getElementById('note-text')) {
+                // Control de la paleta en el juego
+                if (e.key === 'ArrowLeft' && paddleX > 0) {
+                    paddleX -= 10;
+                    e.preventDefault();
+                } else if (e.key === 'ArrowRight' && paddleX < canvas.width - paddleWidth) {
+                    paddleX += 10;
+                    e.preventDefault();
+                }
+            } else {
+                // Navegación del carrusel
+                if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                    scrollToItem(currentIndex - 1);
+                    e.preventDefault();
+                } else if (e.key === 'ArrowRight' && currentIndex < 2) {
+                    scrollToItem(currentIndex + 1);
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Desactivar navegación del carrusel cuando el juego está activo
+        canvas.addEventListener('focus', () => {
+            if (gameRunning) {
+                // Enfocar el canvas para el juego
+                canvas.tabIndex = 0;
+            }
+        });
+
+        canvas.addEventListener('blur', () => {
+            // Permitir navegación del carrusel cuando el juego pierde foco
+        });
+
+        // GIF Aleatorio
+        const gifs = [
+            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1264.gif',
+            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1265.gif',
+            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1266.gif'
+        ];
+        const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+        document.getElementById('random-gif').src = randomGif;
+
+        // Ajustar canvas al cambiar orientación
+        window.addEventListener('resize', () => {
+            if (gameRunning) initGame();
+        });
+    </script>
+</body>
+</html>
