@@ -3,273 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrusel con Bloc de Notas, Brick y GIF Aleatorio</title>
-    <!-- Importar Swiper CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <title>Carrusel Multifuncional</title>
     <style>
-        /* Estilos generales */
         body {
             margin: 0;
+            background-color: #000;
+            color: #fff;
             font-family: Arial, sans-serif;
             overflow: hidden;
-            background-color: #f0f0f0;
         }
-        .swiper-container {
+        .carousel {
             width: 100vw;
             height: 100vh;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
-        .swiper-slide {
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+        .carousel-item {
+            flex: 0 0 100%;
+            height: 100vh;
+            scroll-snap-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #fff;
-            border-radius: 10px;
-            margin: 10px;
-            overflow: auto;
-        }
-
-        /* Bloc de notas */
-        .notepad-container {
-            width: 90%;
-            max-width: 600px;
-            padding: 20px;
-            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
         }
         #notepad {
-            width: 100%;
-            height: 60vh;
-            min-height: 300px;
-            resize: none;
-            font-size: 16px;
+            width: 90%;
+            max-width: 600px;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+        }
+        #notepad textarea {
+            flex-grow: 1;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .notepad-buttons {
-            margin-top: 10px;
-        }
-        .notepad-buttons button {
-            padding: 10px 20px;
-            margin: 5px;
             font-size: 16px;
-            cursor: pointer;
+            resize: none;
+        }
+        #notepad button {
+            background: #444;
+            color: #fff;
             border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
         }
-        .notepad-buttons button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Juego Brick */
-        .brick-container {
+        #game-container {
             width: 90%;
-            max-width: 600px;
+            max-width: 400px;
             text-align: center;
         }
-        #brickCanvas {
-            border: 1px solid #000;
+        #game-canvas {
+            background: #222;
+            border: 1px solid #444;
             width: 100%;
-            max-width: 600px;
-            height: 60vh;
-            min-height: 300px;
-            touch-action: none; /* Evita comportamientos táctiles predeterminados */
+            max-width: 400px;
+            height: 500px;
         }
-
-        /* GIF Aleatorio */
-        .gif-container {
+        #start-button {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        #gif-container {
             width: 90%;
             max-width: 600px;
-            text-align: center;
+            height: 80%;
         }
-        #randomGif {
+        #gif-container img {
             width: 100%;
-            max-height: 60vh;
+            height: 100%;
             object-fit: contain;
-            border-radius: 10px;
         }
-        #newGifButton {
-            padding: 10px 20px;
-            margin-top: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #28a745;
-            color: white;
-        }
-        #newGifButton:hover {
-            background-color: #218838;
-        }
-
-        /* Responsividad */
         @media (orientation: portrait) {
-            .swiper-slide {
-                flex-direction: column;
-            }
-            #notepad, #brickCanvas, #randomGif {
-                height: 50vh;
+            .carousel-item {
+                padding: 20px;
             }
         }
-        @media (max-width: 600px) {
-            .notepad-container, .brick-container, .gif-container {
-                width: 95%;
-                padding: 10px;
+        @media (orientation: landscape) {
+            #game-canvas {
+                height: 300px;
             }
-            #notepad, #brickCanvas {
-                height: 45vh;
-                font-size: 14px;
-            }
-            .notepad-buttons button, #newGifButton {
-                padding: 8px 15px;
-                font-size: 14px;
+            #notepad, #gif-container {
+                height: 70%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Contenedor del carrusel -->
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <!-- Slide 1: Bloc de notas -->
-            <div class="swiper-slide">
-                <div class="notepad-container">
-                    <h2>Bloc de Notas</h2>
-                    <textarea id="notepad" placeholder="Escribe tus notas aquí..."></textarea>
-                    <div class="notepad-buttons">
-                        <button onclick="saveNotepad()">Guardar como TXT</button>
-                        <button onclick="clearNotepad()">Limpiar</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Slide 2: Juego Brick -->
-            <div class="swiper-slide">
-                <div class="brick-container">
-                    <h2>Juego Brick</h2>
-                    <canvas id="brickCanvas"></canvas>
-                </div>
-            </div>
-            <!-- Slide 3: GIF Aleatorio -->
-            <div class="swiper-slide">
-                <div class="gif-container">
-                    <h2>GIF Aleatorio</h2>
-                    <img id="randomGif" src="" alt="GIF Aleatorio">
-                    <button id="newGifButton" onclick="loadRandomGif()">Cargar Nuevo GIF</button>
-                </div>
+    <div class="carousel">
+        <!-- Bloc de Notas -->
+        <div class="carousel-item">
+            <div id="notepad">
+                <textarea id="note-text" placeholder="Escribe aquí..."></textarea>
+                <button onclick="exportToTxt()">Exportar a TXT</button>
             </div>
         </div>
-        <!-- Paginación -->
-        <div class="swiper-pagination"></div>
-        <!-- Botones de navegación -->
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+        <!-- Juego Brick Breaker -->
+        <div class="carousel-item">
+            <div id="game-container">
+                <canvas id="game-canvas"></canvas>
+                <button id="start-button">Comenzar</button>
+            </div>
+        </div>
+        <!-- GIF Aleatorio -->
+        <div class="carousel-item">
+            <div id="gif-container">
+                <img id="random-gif" src="" alt="GIF Aleatorio">
+            </div>
+        </div>
     </div>
 
-    <!-- Importar Swiper JS -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>
-        // Inicializar Swiper
-        const swiper = new Swiper('.swiper-container', {
-            slidesPerView: 1,
-            spaceBetween: 10,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            touchRatio: 1, // Habilitar swipe
-            simulateTouch: true,
-            grabCursor: true,
-        });
-
-        // Funciones del Bloc de Notas
-        function saveNotepad() {
-            const text = document.getElementById('notepad').value;
+        // Exportar Bloc de Notas a TXT
+        function exportToTxt() {
+            const text = document.getElementById('note-text').value;
             const blob = new Blob([text], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'notas.txt';
-            link.click();
-            URL.revokeObjectURL(link.href);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'notas.txt';
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
-        function clearNotepad() {
-            document.getElementById('notepad').value = '';
-        }
-
-        // Juego Brick
-        const canvas = document.getElementById('brickCanvas');
+        // Juego Brick Breaker
+        const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
-        let canvasWidth = canvas.offsetWidth;
-        let canvasHeight = canvas.offsetHeight;
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
+        const startButton = document.getElementById('start-button');
+        let gameRunning = false;
+        let paddleX, ballX, ballY, dx, dy, paddleWidth = 75, paddleHeight = 10;
+        let bricks = [], brickRowCount = 5, brickColumnCount = 7, brickWidth = 50, brickHeight = 20, brickPadding = 10;
+        let difficulty = 1;
 
-        const paddleHeight = 10;
-        const paddleWidth = 75;
-        let paddleX = (canvasWidth - paddleWidth) / 2;
-        const ballRadius = 10;
-        let ballX = canvasWidth / 2;
-        let ballY = canvasHeight - 30;
-        let dx = 2;
-        let dy = -2;
-        const brickRowCount = 5;
-        const brickColumnCount = 8;
-        const brickWidth = canvasWidth / brickColumnCount - 10;
-        const brickHeight = 20;
-        const brickPadding = 10;
-        const brickOffsetTop = 30;
-        const brickOffsetLeft = 5;
-        let bricks = [];
-        let score = 0;
-        let gameRunning = true;
-
-        // Inicializar ladrillos
-        for (let c = 0; c < brickColumnCount; c++) {
-            bricks[c] = [];
-            for (let r = 0; r < brickRowCount; r++) {
-                bricks[c][r] = { x: 0, y: 0, status: 1 };
+        function initGame() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            dx = 2 * difficulty;
+            dy = -2 * difficulty;
+            bricks = [];
+            for (let c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < brickRowCount; r++) {
+                    bricks[c][r] = { x: 0, y: 0, status: 1 };
+                }
             }
         }
 
-        // Manejo de controles táctiles y ratón
-        let touchX = null;
-        canvas.addEventListener('touchstart', (e) => {
-            touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const newTouchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-            paddleX = newTouchX - paddleWidth / 2;
-            if (paddleX < 0) paddleX = 0;
-            if (paddleX > canvasWidth - paddleWidth) paddleX = canvasWidth - paddleWidth;
-        });
-        canvas.addEventListener('touchend', () => {
-            touchX = null;
-        });
-        canvas.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-            paddleX = mouseX - paddleWidth / 2;
-            if (paddleX < 0) paddleX = 0;
-            if (paddleX > canvasWidth - paddleWidth) paddleX = canvasWidth - paddleWidth;
-        });
-
         function drawBall() {
             ctx.beginPath();
-            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff0000';
+            ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
             ctx.fill();
             ctx.closePath();
         }
 
         function drawPaddle() {
             ctx.beginPath();
-            ctx.rect(paddleX, canvasHeight - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = '#0095DD';
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = '#fff';
             ctx.fill();
             ctx.closePath();
         }
@@ -278,13 +186,13 @@
             for (let c = 0; c < brickColumnCount; c++) {
                 for (let r = 0; r < brickRowCount; r++) {
                     if (bricks[c][r].status === 1) {
-                        const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-                        const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                        const brickX = c * (brickWidth + brickPadding) + 30;
+                        const brickY = r * (brickHeight + brickPadding) + 30;
                         bricks[c][r].x = brickX;
                         bricks[c][r].y = brickY;
                         ctx.beginPath();
                         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = '#0095DD';
+                        ctx.fillStyle = '#fff';
                         ctx.fill();
                         ctx.closePath();
                     }
@@ -300,10 +208,10 @@
                         if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
                             dy = -dy;
                             b.status = 0;
-                            score++;
-                            if (score === brickRowCount * brickColumnCount) {
-                                alert('¡Ganaste!');
+                            if (bricks.every(col => col.every(brick => brick.status === 0))) {
                                 gameRunning = false;
+                                difficulty += 0.5;
+                                alert('¡Ganaste! Nueva dificultad: ' + difficulty.toFixed(1));
                             }
                         }
                     }
@@ -311,69 +219,61 @@
             }
         }
 
-        function drawScore() {
-            ctx.font = '16px Arial';
-            ctx.fillStyle = '#0095DD';
-            ctx.fillText('Puntaje: ' + score, 8, 20);
-        }
-
         function draw() {
             if (!gameRunning) return;
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            drawBricks();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBall();
             drawPaddle();
-            drawScore();
+            drawBricks();
             collisionDetection();
-
-            if (ballX + dx > canvasWidth - ballRadius || ballX + dx < ballRadius) {
-                dx = -dx;
-            }
-            if (ballY + dy < ballRadius) {
-                dy = -dy;
-            } else if (ballY + dy > canvasHeight - ballRadius - paddleHeight) {
-                if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-                    dy = -dy;
-                } else if (ballY + dy > canvasHeight - ballRadius) {
-                    alert('¡Juego terminado!');
-                    gameRunning = false;
-                    return;
-                }
-            }
 
             ballX += dx;
             ballY += dy;
+
+            if (ballX + dx > canvas.width - 10 || ballX + dx < 10) dx = -dx;
+            if (ballY + dy < 10) dy = -dy;
+            else if (ballY + dy > canvas.height - 30) {
+                if (ballX > paddleX && ballX < paddleX + paddleWidth) dy = -dy;
+                else {
+                    gameRunning = false;
+                    alert('¡Juego terminado!');
+                }
+            }
+
             requestAnimationFrame(draw);
         }
 
-        // Ajustar canvas al cambiar tamaño
-        window.addEventListener('resize', () => {
-            canvasWidth = canvas.offsetWidth;
-            canvasHeight = canvas.offsetHeight;
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            paddleX = (canvasWidth - paddleWidth) / 2;
-            ballX = canvasWidth / 2;
-            ballY = canvasHeight - 30;
+        startButton.addEventListener('click', () => {
+            if (!gameRunning) {
+                gameRunning = true;
+                initGame();
+                draw();
+            }
         });
 
-        draw();
+        // Control táctil para la paleta
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            paddleX = touch.clientX - rect.left - paddleWidth / 2;
+            if (paddleX < 0) paddleX = 0;
+            if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
+        });
 
-        // GIF Aleatorio con GIPHY API
-        const apiKey = 'TU_CLAVE_API_GIPHY'; // Reemplaza con tu clave de API de GIPHY
-        function loadRandomGif() {
-            fetch(`https://api.giphy.com/v1/gifs/random?api_key=${apiKey}`)
-                .then(response => response.json())
-                .then(data => {
-                    const gifUrl = data.data.images.original.url;
-                    document.getElementById('randomGif').src = gifUrl;
-                })
-                .catch(error => {
-                    console.error('Error cargando GIF:', error);
-                    document.getElementById('randomGif').src = 'https://via.placeholder.com/400x300?text=Error+Cargando+GIF';
-                });
-        }
-        loadRandomGif(); // Cargar un GIF al iniciar
+        // GIF Aleatorio
+        const gifs = [
+            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1264.gif',
+            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1265.gif',
+            'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1266.gif'
+        ];
+        const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+        document.getElementById('random-gif').src = randomGif;
+
+        // Ajustar canvas al cambiar orientación
+        window.addEventListener('resize', () => {
+            if (gameRunning) initGame();
+        });
     </script>
 </body>
 </html>
