@@ -286,7 +286,7 @@
         <div class="carousel-item">
             <div id="video-player">
                 <video id="stream-video" controls></video>
-                <input id="stream-url" type="text" placeholder="Pega el enlace M3U8, HLS o MP4 aquí" value="https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8">
+                <input id="stream-url" type="text" placeholder="Pega el enlace M3U8, HLS o MP4 aquí" value="https://akmzed.cloud/_v1_akmzed/wlGb1SKRfqNcc5tKEyB6WND8btdccfYKv9NO7qvXc5E=/aW5kZXgubTN1OA==.m3u8">
                 <button onclick="loadStream()">Reproducir</button>
             </div>
         </div>
@@ -351,7 +351,9 @@
             const url = document.getElementById('stream-url').value;
             if (url) {
                 video.src = url;
-                video.play().catch(e => alert('Error al reproducir: ' + e.message));
+                video.play().catch(e => {
+                    alert('Error al reproducir: ' + e.message + '. Asegúrate de usar una URL HTTPS válida y que el servidor permita CORS.');
+                });
             } else {
                 alert('Por favor, ingresa un enlace válido.');
             }
