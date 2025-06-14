@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrusel Multifuncional con Video</title>
+    <title>Carrusel de cositas</title>
     <style>
         body {
             margin: 0;
@@ -104,6 +104,7 @@
             background: #000;
             border: 1px solid #444;
             max-width: 100%;
+            touch-action: none; /* Evita interferencias con swipe */
         }
         .white-bg #brickBreakerCanvas {
             background: #fff;
@@ -143,6 +144,14 @@
     <button id="toggle-bg">ON/OFF</button>
     <div class="carousel-container" id="carousel-container">
         <div class="carousel" id="carousel">
+            <!-- Reproductor de Video -->
+            <div class="carousel-item">
+                <h2>Reproductor de Video</h2>
+                <video id="video-player" controls>
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+            </div>
             <!-- Bloc de notas -->
             <div class="carousel-item">
                 <h2>Bloc de Notas</h2>
@@ -160,14 +169,6 @@
             <div class="carousel-item">
                 <h2>GIF Aleatorio</h2>
                 <img id="random-gif" src="https://icegif.com/wp-content/uploads/2023/03/icegif-180.gif" alt="GIF Aleatorio">
-            </div>
-            <!-- Reproductor de Video -->
-            <div class="carousel-item">
-                <h2>Reproductor de Video</h2>
-                <video id="video-player" controls>
-                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                    Tu navegador no soporta el elemento de video.
-                </video>
             </div>
         </div>
         <div class="arrow left-arrow" id="prev">←</div>
@@ -374,6 +375,44 @@
             draw();
         }
 
+        // Controles táctiles optimizados
+        let isTouchingCanvas = false;
+
+        canvas.addEventListener("touchstart", (e) => {
+            e.preventDefault(); // Evita interferencias
+            isTouchingCanvas = true;
+            if (!gameStarted) {
+                gameStarted = true;
+            }
+            // Mover paleta al iniciar toque
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const relativeX = touch.clientX - rect.left;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+                if (paddleX < 0) paddleX = 0;
+                if (paddleX + paddleWidth > canvas.width) paddleX = canvas.width - paddleWidth;
+            }
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", (e) => {
+            if (!isTouchingCanvas) return;
+            e.preventDefault(); // Evita scroll o swipe del carrusel
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const relativeX = touch.clientX - rect.left;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+                if (paddleX < 0) paddleX = 0;
+                if (paddleX + paddleWidth > canvas.width) paddleX = canvas.width - paddleWidth;
+            }
+        }, { passive: false });
+
+        canvas.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            isTouchingCanvas = false;
+        }, { passive: false });
+
         document.addEventListener("keydown", keyDownHandler);
         function keyDownHandler(e) {
             if (e.key === "ArrowLeft" || e.key === "a") {
@@ -386,20 +425,6 @@
                 gameStarted = true;
             }
         }
-
-        canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
-        function touchMoveHandler(e) {
-            e.preventDefault();
-            let touch = e.touches[0];
-            let relativeX = touch.clientX - canvas.offsetLeft;
-            if (relativeX > 0 && relativeX < canvas.width) {
-                paddleX = relativeX - paddleWidth / 2;
-            }
-        }
-
-        canvas.addEventListener("touchstart", () => {
-            if (!gameStarted) gameStarted = true;
-        }, { passive: true });
 
         initBricks();
         setInterval(updateGame, 1000 / 60);
