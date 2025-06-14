@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrusel de cositas</title>
+    <title>Carrusel Multifuncional con Flechas Ocultas</title>
     <style>
         body {
             margin: 0;
@@ -52,6 +52,9 @@
         }
         .carousel-container:hover .arrow {
             opacity: 1;
+        }
+        .arrow.hidden {
+            display: none; /* Oculta la flecha cuando no se necesita */
         }
         .left-arrow {
             left: 10px;
@@ -186,6 +189,9 @@
 
         function updateCarousel() {
             carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            // Mostrar/ocultar flechas según la posición
+            prevBtn.classList.toggle("hidden", currentIndex === 0);
+            nextBtn.classList.toggle("hidden", currentIndex === totalItems - 1);
         }
 
         prevBtn.addEventListener("click", () => {
@@ -316,11 +322,13 @@
             drawBall();
         }
 
-        function resetGame() {
+        function resetGame(increaseDifficulty = false) {
             ballX = canvas.width / 2;
             ballY = canvas.height - 30;
             paddleX = (canvas.width - paddleWidth) / 2;
-            baseBallSpeed *= difficultyIncrement; // Aumenta dificultad
+            if (increaseDifficulty) {
+                baseBallSpeed *= difficultyIncrement; // Aumenta dificultad solo si se ganan todos los ladrillos
+            }
             ballSpeedX = baseBallSpeed * (Math.random() > 0.5 ? 1 : -1);
             ballSpeedY = -baseBallSpeed;
             bricks = [];
@@ -344,7 +352,7 @@
                 ballSpeedY = -ballSpeedY;
             }
             if (ballY + ballRadius > canvas.height) {
-                resetGame();
+                resetGame(false); // Reinicia sin aumentar dificultad si la pelota cae
                 return;
             }
 
@@ -369,7 +377,7 @@
             }
 
             if (allBricksDestroyed) {
-                resetGame();
+                resetGame(true); // Reinicia con mayor dificultad si se destruyen todos los ladrillos
             }
 
             draw();
@@ -434,6 +442,9 @@
         videoPlayer.addEventListener("play", () => {
             // Opcional: Pausar otros medios si es necesario
         });
+
+        // Inicializar visibilidad de flechas
+        updateCarousel();
     </script>
 </body>
 </html>
