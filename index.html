@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrusel Multifuncional</title>
+    <title>Carrusel Multifuncional con Video</title>
     <style>
         body {
             margin: 0;
@@ -11,6 +11,7 @@
             background-color: #000;
             color: #fff;
             transition: background-color 0.3s;
+            touch-action: manipulation; /* Mejora interacción táctil */
         }
         .white-bg {
             background-color: #fff;
@@ -21,16 +22,21 @@
             margin: 20px auto;
             position: relative;
             overflow: hidden;
+            user-select: none; /* Evita selección accidental */
         }
         .carousel {
             display: flex;
             transition: transform 0.5s ease-in-out;
+            will-change: transform; /* Optimiza animaciones */
         }
         .carousel-item {
             min-width: 100%;
             box-sizing: border-box;
             padding: 20px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .arrow {
             position: absolute;
@@ -43,7 +49,6 @@
             cursor: pointer;
             opacity: 0;
             transition: opacity 0.3s;
-            user-select: none;
         }
         .carousel-container:hover .arrow {
             opacity: 1;
@@ -71,6 +76,7 @@
         }
         #notepad {
             width: 100%;
+            max-width: 600px;
             height: 300px;
             resize: none;
             background: #222;
@@ -97,12 +103,18 @@
         #brickBreakerCanvas {
             background: #000;
             border: 1px solid #444;
+            max-width: 100%;
         }
         .white-bg #brickBreakerCanvas {
             background: #fff;
             border: 1px solid #ccc;
         }
         #random-gif {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        #video-player {
             max-width: 100%;
             max-height: 400px;
             object-fit: contain;
@@ -121,12 +133,15 @@
                 width: 100%;
                 height: auto;
             }
+            #video-player {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <button id="toggle-bg">ON/OFF</button>
-    <div class="carousel-container">
+    <div class="carousel-container" id="carousel-container">
         <div class="carousel" id="carousel">
             <!-- Bloc de notas -->
             <div class="carousel-item">
@@ -141,16 +156,22 @@
                 <canvas id="brickBreakerCanvas" width="600" height="400"></canvas>
                 <p>Usa ←/→ o A/D para mover, Espacio para iniciar. En móviles, desliza el dedo.</p>
             </div>
-            <!-- GIF Ale -->
-            <!-- -->
+            <!-- GIF Aleatorio -->
             <div class="carousel-item">
                 <h2>GIF Aleatorio</h2>
                 <img id="random-gif" src="https://icegif.com/wp-content/uploads/2023/03/icegif-180.gif" alt="GIF Aleatorio">
             </div>
-            
+            <!-- Reproductor de Video -->
+            <div class="carousel-item">
+                <h2>Reproductor de Video</h2>
+                <video id="video-player" controls>
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+            </div>
         </div>
-        <div class="arrow left-arrow" id="prev">&larr;</div>
-        <div class="arrow right-arrow" id="next">&lt;/rarr;</div>
+        <div class="arrow left-arrow" id="prev">←</div>
+        <div class="arrow right-arrow" id="next">→</div>
     </div>
 
     <script>
@@ -158,20 +179,49 @@
         const carousel = document.getElementById("carousel");
         const prevBtn = document.getElementById("prev");
         const nextBtn = document.getElementById("next");
+        const carouselContainer = document.getElementById("carousel-container");
         let currentIndex = 0;
+        const totalItems = 4;
+
         function updateCarousel() {
             carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
 
-        prevBtn.addEventListener("click", function() {
-            currentIndex = currentIndex > 0 ? currentIndex - 1 : 2;
+        prevBtn.addEventListener("click", () => {
+            currentIndex = currentIndex > 0 ? currentIndex - 1 : totalItems - 1;
             updateCarousel();
         });
 
-        nextBtn.addEventListener("click", function() {
-            currentIndex = currentIndex < 1 ? currentIndex + 2 : 0;
+        nextBtn.addEventListener("click", () => {
+            currentIndex = currentIndex < totalItems - 1 ? currentIndex + 1 : 0;
             updateCarousel();
         });
+
+        // Soporte para swipe
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carouselContainer.addEventListener("touchstart", (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        carouselContainer.addEventListener("touchend", (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50; // Umbral para detectar swipe
+            if (touchStartX - touchEndX > swipeThreshold) {
+                // Swipe izquierda (siguiente)
+                currentIndex = currentIndex < totalItems - 1 ? currentIndex + 1 : 0;
+                updateCarousel();
+            } else if (touchEndX - touchStartX > swipeThreshold) {
+                // Swipe derecha (anterior)
+                currentIndex = currentIndex > 0 ? currentIndex - 1 : totalItems - 1;
+                updateCarousel();
+            }
+        }
 
         // Alternar fondo
         const toggleBgBtn = document.getElementById("toggle-bg");
@@ -182,27 +232,27 @@
         // Bloc de notas
         const notepad = document.getElementById("notepad");
         const downloadBtn = document.getElementById("download-btn");
-        downloadBtn.addEventListener("click", function() {
-            let blob = new Blob([notepad.value], {type: "text/plain"});
-            let url = window.URL.createObjectURL(blob);
-            let a = document.createElement("a");
+        downloadBtn.addEventListener("click", () => {
+            const blob = new Blob([notepad.value], { type: "text/plain" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
             a.href = url;
             a.download = "nota.txt";
             a.click();
-            window.URL.revokeObjectURL(url");
+            window.URL.revokeObjectURL(url);
         });
 
         // Juego de Brick Breaker
-        let canvas = document.getElementById("brickBreakerCanvas");
-        let ctx = canvas.getContext("2d");
+        const canvas = document.getElementById("brickBreakerCanvas");
+        const ctx = canvas.getContext("2d");
         let ballX = canvas.width / 2;
         let ballY = canvas.height - 30;
         let ballRadius = 10;
         let paddleWidth = 75;
         let paddleHeight = 10;
         let paddleX = (canvas.width - paddleWidth) / 2;
-        let brickRowCount = 5;
-        let brickColCount = 7;
+        let brickRowCount = 3;
+        let brickColCount = 5;
         let brickWidth = 75;
         let brickHeight = 20;
         let brickPadding = 10;
@@ -219,9 +269,11 @@
             for (let row = 0; row < brickRowCount; row++) {
                 bricks[row] = [];
                 for (let col = 0; col < brickColCount; col++) {
-                    bricks[row][col] = {x: col * (brickCol + brickPadding) + brickOffsetLeft,
+                    bricks[row][col] = {
+                        x: col * (brickWidth + brickPadding) + brickOffsetLeft,
                         y: row * (brickHeight + brickPadding) + brickOffsetTop,
-                        status: 1};
+                        status: 1
+                    };
                 }
             }
         }
@@ -246,8 +298,11 @@
             for (let row = 0; row < brickRowCount; row++) {
                 for (let col = 0; col < brickColCount; col++) {
                     if (bricks[row][col].status === 1) {
-                        ctx.fillStyle = "red";
-                        ctx.fillRect(bricks[row][col].x, bricks[row][col].y, brickWidth, brickHeight);
+                        ctx.beginPath();
+                        ctx.rect(bricks[row][col].x, bricks[row][col].y, brickWidth, brickHeight);
+                        ctx.fillStyle = "#ff4444";
+                        ctx.fill();
+                        ctx.closePath();
                     }
                 }
             }
@@ -264,7 +319,7 @@
             ballX = canvas.width / 2;
             ballY = canvas.height - 30;
             paddleX = (canvas.width - paddleWidth) / 2;
-            baseBallSpeed *= difficultyIncrement; // Aumenta la dificultad
+            baseBallSpeed *= difficultyIncrement; // Aumenta dificultad
             ballSpeedX = baseBallSpeed * (Math.random() > 0.5 ? 1 : -1);
             ballSpeedY = -baseBallSpeed;
             bricks = [];
@@ -332,7 +387,7 @@
             }
         }
 
-        canvas.addEventListener("touchmove", touchMoveHandler);
+        canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
         function touchMoveHandler(e) {
             e.preventDefault();
             let touch = e.touches[0];
@@ -344,14 +399,16 @@
 
         canvas.addEventListener("touchstart", () => {
             if (!gameStarted) gameStarted = true;
-        });
+        }, { passive: true });
 
         initBricks();
         setInterval(updateGame, 1000 / 60);
 
-        // GIF aleatorio (simulado con uno estático por simplicidad)
-        // Nota: IceGIF no tiene una API pública, por lo que usamos un GIF de ejemplo
-        // Para GIFs dinámicos, necesitarías una API o lista predefinida
+        // Reproductor de video
+        const videoPlayer = document.getElementById("video-player");
+        videoPlayer.addEventListener("play", () => {
+            // Opcional: Pausar otros medios si es necesario
+        });
     </script>
 </body>
 </html>
