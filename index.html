@@ -40,6 +40,53 @@
             padding: 10px;
             box-sizing: border-box;
         }
+        /* Reproductor de video */
+        #video-player {
+            width: 90%;
+            max-width: 600px;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #video-player video {
+            width: 100%;
+            height: 80%;
+            background: #222;
+            border: 1px solid #444;
+            transition: background 0.3s, border 0.3s;
+        }
+        body.light #video-player video {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        #video-player input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            transition: background 0.3s, color 0.3s, border 0.3s;
+        }
+        body.light #video-player input {
+            background: #f0f0f0;
+            color: #000;
+            border: 1px solid #ccc;
+        }
+        #video-player button {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.light #video-player button {
+            background: #ccc;
+            color: #000;
+        }
+        /* Bloc de notas */
         #notepad {
             width: 90%;
             max-width: 600px;
@@ -75,6 +122,7 @@
             background: #ccc;
             color: #000;
         }
+        /* Juego */
         #game-container {
             width: 90%;
             max-width: 400px;
@@ -105,6 +153,7 @@
             background: #ccc;
             color: #000;
         }
+        /* GIF */
         #gif-container {
             width: 90%;
             max-width: 600px;
@@ -210,7 +259,7 @@
             #game-canvas {
                 height: 300px;
             }
-            #notepad, #gif-container {
+            #video-player, #notepad, #gif-container {
                 height: 70%;
             }
         }
@@ -233,6 +282,14 @@
     </div>
     <!-- Carrusel -->
     <div class="carousel">
+        <!-- Reproductor de video -->
+        <div class="carousel-item">
+            <div id="video-player">
+                <video id="stream-video" controls></video>
+                <input id="stream-url" type="text" placeholder="Pega el enlace M3U8, HLS o MP4 aquí" value="https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8">
+                <button onclick="loadStream()">Reproducir</button>
+            </div>
+        </div>
         <!-- Bloc de Notas -->
         <div class="carousel-item">
             <div id="notepad">
@@ -283,10 +340,22 @@
         });
 
         nextArrow.addEventListener('click', () => {
-            if (currentIndex < 2 && !gameRunning) {
+            if (currentIndex < 3 && !gameRunning) {
                 scrollToItem(currentIndex + 1);
             }
         });
+
+        // Reproductor de video
+        function loadStream() {
+            const video = document.getElementById('stream-video');
+            const url = document.getElementById('stream-url').value;
+            if (url) {
+                video.src = url;
+                video.play().catch(e => alert('Error al reproducir: ' + e.message));
+            } else {
+                alert('Por favor, ingresa un enlace válido.');
+            }
+        }
 
         // Exportar Bloc de Notas a TXT
         function exportToTxt() {
@@ -436,7 +505,7 @@
                 if (e.key === 'ArrowLeft' && currentIndex > 0) {
                     scrollToItem(currentIndex - 1);
                     e.preventDefault();
-                } else if (e.key === 'ArrowRight' && currentIndex < 2) {
+                } else if (e.key === 'ArrowRight' && currentIndex < 3) {
                     scrollToItem(currentIndex + 1);
                     e.preventDefault();
                 }
