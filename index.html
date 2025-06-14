@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrrrrusel Multifuncional</title>
+    <title>Carrusel Multifuncional</title>
     <style>
         body {
             margin: 0;
@@ -11,6 +11,11 @@
             color: #fff;
             font-family: Arial, sans-serif;
             overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.light {
+            background-color: #fff;
+            color: #000;
         }
         .carousel {
             width: 100vw;
@@ -20,6 +25,7 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            scroll-behavior: smooth;
         }
         .carousel::-webkit-scrollbar {
             display: none;
@@ -49,6 +55,12 @@
             padding: 10px;
             font-size: 16px;
             resize: none;
+            transition: background 0.3s, color 0.3s, border 0.3s;
+        }
+        body.light #notepad textarea {
+            background: #f0f0f0;
+            color: #000;
+            border: 1px solid #ccc;
         }
         #notepad button {
             background: #444;
@@ -57,6 +69,11 @@
             padding: 10px;
             margin-top: 10px;
             cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.light #notepad button {
+            background: #ccc;
+            color: #000;
         }
         #game-container {
             width: 90%;
@@ -69,6 +86,11 @@
             width: 100%;
             max-width: 400px;
             height: 500px;
+            transition: background 0.3s, border 0.3s;
+        }
+        body.light #game-canvas {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
         }
         #start-button {
             background: #444;
@@ -77,6 +99,11 @@
             padding: 10px 20px;
             margin: 10px 0;
             cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.light #start-button {
+            background: #ccc;
+            color: #000;
         }
         #gif-container {
             width: 90%;
@@ -87,6 +114,83 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+        /* Switch ON/OFF */
+        .switch-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        /* Flechas de navegación */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 50%;
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        body.light .nav-arrow {
+            background: rgba(0, 0, 0, 0.2);
+            color: #000;
+        }
+        body.light .nav-arrow:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        #prev-arrow {
+            left: 10px;
+        }
+        #next-arrow {
+            right: 10px;
         }
         @media (orientation: portrait) {
             .carousel-item {
@@ -104,6 +208,17 @@
     </style>
 </head>
 <body>
+    <!-- Switch ON/OFF -->
+    <div class="switch-container">
+        <label class="switch">
+            <input type="checkbox" id="theme-switch">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <!-- Flechas de navegación -->
+    <button id="prev-arrow" class="nav-arrow">&larr;</button>
+    <button id="next-arrow" class="nav-arrow">&rarr;</button>
+    <!-- Carrusel -->
     <div class="carousel">
         <!-- Bloc de Notas -->
         <div class="carousel-item">
@@ -128,6 +243,38 @@
     </div>
 
     <script>
+        // Cambiar tema (fondo negro/blanco)
+        const themeSwitch = document.getElementById('theme-switch');
+        themeSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('light');
+        });
+
+        // Navegación con flechas
+        const carousel = document.querySelector('.carousel');
+        const prevArrow = document.getElementById('prev-arrow');
+        const nextArrow = document.getElementById('next-arrow');
+        let currentIndex = 0;
+
+        function scrollToItem(index) {
+            carousel.scrollTo({
+                left: index * carousel.clientWidth,
+                behavior: 'smooth'
+            });
+            currentIndex = index;
+        }
+
+        prevArrow.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                scrollToItem(currentIndex - 1);
+            }
+        });
+
+        nextArrow.addEventListener('click', () => {
+            if (currentIndex < 2) {
+                scrollToItem(currentIndex + 1);
+            }
+        });
+
         // Exportar Bloc de Notas a TXT
         function exportToTxt() {
             const text = document.getElementById('note-text').value;
@@ -169,7 +316,7 @@
         function drawBall() {
             ctx.beginPath();
             ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
             ctx.fill();
             ctx.closePath();
         }
@@ -177,7 +324,7 @@
         function drawPaddle() {
             ctx.beginPath();
             ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
             ctx.fill();
             ctx.closePath();
         }
@@ -192,7 +339,7 @@
                         bricks[c][r].y = brickY;
                         ctx.beginPath();
                         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = '#fff';
+                        ctx.fillStyle = document.body.classList.contains('light') ? '#000' : '#fff';
                         ctx.fill();
                         ctx.closePath();
                     }
