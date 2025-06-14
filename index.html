@@ -369,9 +369,8 @@
                             dy = -dy;
                             b.status = 0;
                             if (bricks.every(col => col.every(brick => brick.status === 0))) {
-                                gameRunning = false;
-                                difficulty += 0.5;
-                                alert('¡Ganaste! Nueva dificultad: ' + difficulty.toFixed(1));
+                                difficulty += 0.5; // Aumentar dificultad
+                                initGame(); // Reiniciar juego
                             }
                         }
                     }
@@ -447,7 +446,6 @@
         // Desactivar navegación del carrusel cuando el juego está activo
         canvas.addEventListener('focus', () => {
             if (gameRunning) {
-                // Enfocar el canvas para el juego
                 canvas.tabIndex = 0;
             }
         });
